@@ -1,0 +1,61 @@
+#containerAll {
+  border: 1px solid red;
+  height: calc(100vh - 130px);
+}
+#containerHomePage{
+  margin: 0 50px;
+}
+#containerListMovie{
+  border: 1px solid red;
+  margin: 40px auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+.item_movie{
+  border: solid 1px;
+  width: 200px;
+  height: 319px;
+  text-decoration: none;
+  transition: 0.5s;
+  color: #323435;
+  position: relative;
+  margin-right: 20px ;
+
+}
+.item_movie img{
+  position: absolute;
+  top: 0;
+  z-index: -1;
+  &:hover{
+    transform: scale(1.1);
+  }
+}
+.vote_item{
+  position: absolute;
+  border: 3px solid #f7ba33;
+  top: calc(100% - 45px);
+  margin: 0;
+  height: 40px;
+  border-radius: 50%;
+  width: 40px;
+  text-align: center;
+  line-height: 35px;
+  left: 5px;
+  font-size: 19px;
+  font-weight: bold;
+}
+.release_item{
+  margin: 0;
+  font-size: 18px;
+  text-align: center;
+  color: white;
+}
+.title_item{
+  margin: 10px 0;
+  height: 40px;
+  text-align: center;
+  line-height: 40px;
+  background-color: rgba(0,0,0,0.4);
+  color: white;
+}

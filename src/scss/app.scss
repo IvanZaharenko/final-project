@@ -1,0 +1,39 @@
+/* By Athlon Front-End Team */
+
+/* Core variables */
+@import "base/vars";
+
+/* CSS normalaze */
+@import "base/normalaze";
+
+/* CSS print */
+@import "base/print";
+
+/* Fonts */
+
+
+/* Mixins, helpers and functions */
+@import "base/mixins";
+
+/* Vendor */
+
+/* Components */
+
+/* Browser specific styles */
+@import "dirty/hacks";
+
+@import "components/header";
+@import "components/main_page";
+@import "components/style";
+
+html {
+    box-sizing: border-box;
+}
+
+*,
+*::after,
+*::before {
+    box-sizing: inherit;
+}
+
+
