@@ -1,6 +1,88 @@
 import '../scss/app.scss';
 
 /* Your JS Code goes here */
+const containerPagination = document.getElementById('container_pagination');
+const containerListMovie = document.getElementById('containerListMovie')
+
+function getMovis (page, sortType) {
+    return Promise.resolve().then(() => {
+        return fetch (`https://api.themoviedb.org/3/discover/movie?api_key=dcc9acdebadcf222b7588db1d80573d0&language=ru-US&sort_by=${sortType}&include_adult=false&include_video=false&page=${page}&with_watch_monetization_types=flatrate`).then(
+            response => response.json())
+    })
+}
+
+getMovis (1, 'release_date.asc')
+    .then(post => {
+        console.log(post.results)
+
+        const fragment = document.createDocumentFragment();
+
+        for(let i=0; i < post.results.length; i++) {
+             console.log(i)
+            let a = document.createElement('a');
+            a.classList.add('item_movie');
+            let div = document.createElement('div');
+
+            let img = document.createElement('img');
+            img.src = `https://image.tmdb.org/t/p/w500${post.results[i].poster_path}`;
+            img.alt = 'Постер фильма';
+
+            let p_title = document.createElement('p');
+            p_title.classList.add('title_item');
+            p_title.innerHTML = post.results[i].title;
+
+            let p_vote = document.createElement('p');
+            p_vote.classList.add('vote_item');
+            p_vote.innerHTML = post.results[i].vote_average;
+
+            let p_release = document.createElement('p');
+            p_release.classList.add('release_item');
+            p_release.innerHTML = post.results[i].release_date;
+
+            div.appendChild(img);
+            div.appendChild(p_title);
+            div.appendChild(p_vote);
+            div.appendChild(p_release);
+            a.appendChild(div)
+            
+            fragment.appendChild(a)
+        }
+        containerListMovie.appendChild(fragment)
+    })
+    .catch(err => console.log(err));
+     
+
+
+
+function createPagination () {
+    const fragment = document.createDocumentFragment();
+    let ul = document.createElement('ul');
+    ul.classList.add('pagination');
+
+    for (let i = 0; i <= 11; i++){
+        let li = document.createElement('li');
+        let a = document.createElement('a');
+        li.appendChild(a)
+        ul.appendChild(li)
+
+        if( i>0 && i<11 ){
+         a.innerHTML = i;
+        }
+    }
+    ul.firstChild.querySelector('a').innerHTML = `‹ Предыдущая`;
+    ul.lastChild.querySelector('a').innerHTML = `Следующая ›`;
+    ul.childNodes[1].querySelector('a').classList.add('activ_page');
+
+    fragment.appendChild(ul)
+    containerPagination.appendChild(fragment)
+}
+
+createPagination ()
+
+
+
+
+/*
 let main = document.getElementById('Main'),
     game = document.getElementById('Game'),
     setting = document.getElementById('Settings'),
@@ -93,3 +175,7 @@ function SwitchToAboutPage() {
 
 // переключаемся в состояние, которое сейчас прописано в закладке УРЛ
 SwitchToStateFromURLHash();
+*/
+
+/* Demo JS */
+import './mouseEvent';
