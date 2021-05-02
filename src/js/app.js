@@ -2,8 +2,61 @@ import '../scss/app.scss';
 
 /* Your JS Code goes here */
 const containerPagination = document.getElementById('container_pagination');
-const containerListMovie = document.getElementById('containerListMovie')
+const containerListMovie = document.getElementById('containerListMovie');
+let activPage;
 
+getMovis(1, 'popularity.desc')
+    .then(post =>  createGetMovie(post))
+    .catch(err => console.log(err));
+
+createPagination ()
+/*
+function rulePrevNext(context){
+    if (context.classList.contains('page-prev')){
+        searchActivPage (nodePage);
+
+
+        if(activPage != 1){
+            nodePage[activPage].classList.remove('activ_page');
+            nodePage[activPage - 1].classList.add('activ_page');
+            getMovis(ctivPage - 1, 'popularity.desc')
+                .then(post =>  createGetMovie(post))
+                .catch(err => console.log(err));
+        }
+        
+        
+    } else {
+
+    }
+}
+ */
+
+containerPagination.addEventListener('click', (e) => {
+    let target = e.target;
+    let nodePage = containerPagination.querySelectorAll('a');  
+    let page = Number(target.innerHTML);
+    
+
+    if (target.matches('a')) {
+        if(target.classList.contains('page-prev') || target.classList.contains('page-next')) {
+           // rulePrevNext(target);
+        } else  {
+
+            searchActivPage (nodePage);
+
+            nodePage[activPage].classList.remove('activ_page');
+            nodePage[page].classList.add('activ_page');
+            removeChild(containerListMovie);
+            getMovis(page, 'popularity.desc')
+                .then(post =>  createGetMovie(post))
+                .catch(err => console.log(err));
+        }
+
+    }
+    
+})
+
+//Получение базы фильмов по запросу 
 function getMovis (page, sortType) {
     return Promise.resolve().then(() => {
         return fetch (`https://api.themoviedb.org/3/discover/movie?api_key=dcc9acdebadcf222b7588db1d80573d0&language=ru-US&sort_by=${sortType}&include_adult=false&include_video=false&page=${page}&with_watch_monetization_types=flatrate`).then(
@@ -11,49 +64,43 @@ function getMovis (page, sortType) {
     })
 }
 
-getMovis (1, 'release_date.asc')
-    .then(post => {
-        console.log(post.results)
+//Создание полученных фильмов
+function createGetMovie(basafilms) {
+    const fragment = document.createDocumentFragment();
 
-        const fragment = document.createDocumentFragment();
+    for(let i=0; i < basafilms.results.length; i++) {
+        let a = document.createElement('a');
+        a.classList.add('item_movie');
+        let div = document.createElement('div');
 
-        for(let i=0; i < post.results.length; i++) {
-             console.log(i)
-            let a = document.createElement('a');
-            a.classList.add('item_movie');
-            let div = document.createElement('div');
+        let img = document.createElement('img');
+        img.src = `https://image.tmdb.org/t/p/w500${basafilms.results[i].poster_path}`;
+        img.alt = 'Постер фильма';
 
-            let img = document.createElement('img');
-            img.src = `https://image.tmdb.org/t/p/w500${post.results[i].poster_path}`;
-            img.alt = 'Постер фильма';
+        let p_title = document.createElement('p');
+        p_title.classList.add('title_item');
+        p_title.innerHTML = basafilms.results[i].title;
 
-            let p_title = document.createElement('p');
-            p_title.classList.add('title_item');
-            p_title.innerHTML = post.results[i].title;
+        let p_vote = document.createElement('p');
+        p_vote.classList.add('vote_item');
+        p_vote.innerHTML = basafilms.results[i].vote_average;
 
-            let p_vote = document.createElement('p');
-            p_vote.classList.add('vote_item');
-            p_vote.innerHTML = post.results[i].vote_average;
+        let p_release = document.createElement('p');
+        p_release.classList.add('release_item');
+        p_release.innerHTML = transformGetData(basafilms.results[i].release_date) ;
 
-            let p_release = document.createElement('p');
-            p_release.classList.add('release_item');
-            p_release.innerHTML = post.results[i].release_date;
+        div.appendChild(img);
+        div.appendChild(p_title);
+        div.appendChild(p_vote);
+        div.appendChild(p_release);
+        a.appendChild(div)
+        
+        fragment.appendChild(a)
+    }
+    containerListMovie.appendChild(fragment)
+}
 
-            div.appendChild(img);
-            div.appendChild(p_title);
-            div.appendChild(p_vote);
-            div.appendChild(p_release);
-            a.appendChild(div)
-            
-            fragment.appendChild(a)
-        }
-        containerListMovie.appendChild(fragment)
-    })
-    .catch(err => console.log(err));
-     
-
-
-
+//Создания блока пагинации
 function createPagination () {
     const fragment = document.createDocumentFragment();
     let ul = document.createElement('ul');
@@ -70,17 +117,34 @@ function createPagination () {
         }
     }
     ul.firstChild.querySelector('a').innerHTML = `‹ Предыдущая`;
-    ul.lastChild.querySelector('a').innerHTML = `Следующая ›`;
-    ul.childNodes[1].querySelector('a').classList.add('activ_page');
+    ul.firstChild.querySelector('a').classList.add('page-prev')
 
+    ul.lastChild.querySelector('a').innerHTML = `Следующая ›`;
+    ul.lastChild.querySelector('a').classList.add('page-next')
+
+    ul.childNodes[1].querySelector('a').classList.add('activ_page');
+    
     fragment.appendChild(ul)
     containerPagination.appendChild(fragment)
+
 }
 
-createPagination ()
-
-
-
+function searchActivPage (pages) {
+    for(let i = 0; i <= pages.length; i++) {
+              if (pages[i].classList.contains('activ_page')){
+                  activPage = i;
+                  break
+               }
+           }
+}
+//Преобразование даты
+const transformGetData = (getData) => getData.split('-').reverse().join('/');
+//функция удаления детей элемента
+function removeChild(elem) {
+    while (elem.firstChild) {
+      elem.removeChild(elem.firstChild);
+    }
+  }
 
 /*
 let main = document.getElementById('Main'),

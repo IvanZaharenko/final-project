@@ -23,6 +23,8 @@ body{
   position: relative;
   margin:20px 20px;
   border-radius: 5px;
+  cursor: pointer;
+
     &:hover{
       background-color: rgba(0,0,0,0.5);
   }
@@ -41,17 +43,18 @@ body{
 }
 .vote_item{
   position: absolute;
-  border: 3px solid #f7ba33;
-  top: calc(100% - 45px);
+  top: calc(100% - 26px);
+  left: 0;
   margin: 0;
-  height: 40px;
-  border-radius: 50%;
-  width: 40px;
+  height: 26px;
+  width: 46px;
+  background-color: #f7ba33;
+  border-radius: 0 3px 0 0;
   text-align: center;
-  line-height: 35px;
-  left: 5px;
-  font-size: 19px;
-  font-weight: bold;
+  font-size: 16px;
+  color: #1c1d1c;
+  padding-top: 3px;
+  padding-bottom: 2px;
   visibility: hidden;
 }
 .release_item{
@@ -60,14 +63,19 @@ body{
   text-align: center;
   color: white;
   visibility: hidden;
+  position: absolute;
+  top: calc(100% + 5px);
 }
 .title_item{
   margin: 10px 0;
-  height: 40px;
   text-align: center;
-  line-height: 40px;
+  min-height: 30px;
+  line-height: 30px;
   background-color: rgba(0,0,0,0.4);
   color: white;
+  -moz-user-select: none;
+-khtml-user-select: none;
+user-select: none;  
 }
 .visable {
   visibility: visible;
