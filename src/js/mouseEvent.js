@@ -8,11 +8,11 @@ containerMovie.addEventListener('mouseover',  (event) => {
   const releaseItem = target.closest('.item_movie').querySelector('.release_item');
   voteItem.classList.add('visable');
   releaseItem.classList.add('visable');
-    
+
 containerMovie.addEventListener('mouseout',  (event) => {
 voteItem.classList.remove('visable');
 releaseItem.classList.remove('visable');
     });
-}    
-})
+}
+});
 

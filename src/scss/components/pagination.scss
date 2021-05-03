@@ -4,14 +4,15 @@
 	text-align:center;
 	font-family: 'Open Sans', sans-serif;
         li {
-        background: #1c1d1c; 
-        display: inline-block; 
+        background: #1c1d1c;
+        display: inline-block;
             a {
-            color: white; 
-            display: block; 
-            padding: 7px 20px; 
-            text-decoration: none; 
+            color: white;
+            display: block;
+            padding: 7px 20px;
+            text-decoration: none;
             cursor: pointer;
+            user-select: none;
             &:hover{
                 background: #913f09;
             }

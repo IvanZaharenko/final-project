@@ -14,6 +14,14 @@ body{
   justify-content: center;
   max-width: 1360px;
 }
+#sortForm{
+  background-color: #494a49;
+  border: 1px solid #494a49;
+  height: 30px;
+  width: 300px;
+  margin-left: 50px;
+  color: white;
+}
 .item_movie{
   width: 200px;
   height: 319px;
@@ -75,7 +83,7 @@ body{
   color: white;
   -moz-user-select: none;
 -khtml-user-select: none;
-user-select: none;  
+user-select: none;
 }
 .visable {
   visibility: visible;

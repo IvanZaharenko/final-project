@@ -3,43 +3,46 @@ import '../scss/app.scss';
 /* Your JS Code goes here */
 const containerPagination = document.getElementById('container_pagination');
 const containerListMovie = document.getElementById('containerListMovie');
-let activPage;
-
-getMovis(1, 'popularity.desc')
-    .then(post =>  createGetMovie(post))
-    .catch(err => console.log(err));
-
-createPagination ()
-/*
-function rulePrevNext(context){
-    if (context.classList.contains('page-prev')){
-        searchActivPage (nodePage);
+const sortForm = document.getElementById('sortForm');
+let activPage = 1;
 
 
-        if(activPage != 1){
-            nodePage[activPage].classList.remove('activ_page');
-            nodePage[activPage - 1].classList.add('activ_page');
-            getMovis(ctivPage - 1, 'popularity.desc')
-                .then(post =>  createGetMovie(post))
-                .catch(err => console.log(err));
-        }
-        
-        
-    } else {
 
-    }
-}
- */
 
+
+
+//При прогрузке страницы
+document.addEventListener ('DOMContentLoaded', function () {
+
+    getMovis(1, selectTypeSort(sortForm))
+        .then(post =>  createGetMovie(post))
+        .catch(err => console.log(err));
+
+    createPagination ();
+});
+
+//Управление сортировкой
+sortForm.addEventListener("change", ()=>{
+    let nodePage = containerPagination.querySelectorAll('a');
+
+    removeChild(containerListMovie);
+    searchActivPage (nodePage);
+
+     getMovis(activPage, selectTypeSort(sortForm) )
+         .then(post =>  createGetMovie(post))
+         .catch(err => console.log(err));
+});
+
+//Управление пагинацией
 containerPagination.addEventListener('click', (e) => {
     let target = e.target;
-    let nodePage = containerPagination.querySelectorAll('a');  
+    let nodePage = containerPagination.querySelectorAll('a');
     let page = Number(target.innerHTML);
-    
+
 
     if (target.matches('a')) {
         if(target.classList.contains('page-prev') || target.classList.contains('page-next')) {
-           // rulePrevNext(target);
+            rulePrevNext(target, nodePage);
         } else  {
 
             searchActivPage (nodePage);
@@ -47,16 +50,43 @@ containerPagination.addEventListener('click', (e) => {
             nodePage[activPage].classList.remove('activ_page');
             nodePage[page].classList.add('activ_page');
             removeChild(containerListMovie);
-            getMovis(page, 'popularity.desc')
+
+            getMovis(page, selectTypeSort(sortForm))
                 .then(post =>  createGetMovie(post))
                 .catch(err => console.log(err));
         }
 
     }
-    
-})
 
-//Получение базы фильмов по запросу 
+});
+
+function rulePrevNext(context, allPage){
+    searchActivPage (allPage);
+    if (context.classList.contains('page-prev')){
+        if(activPage !== 1){
+            allPage[activPage].classList.remove('activ_page');
+            activPage--;
+            allPage[activPage].classList.add('activ_page');
+            removeChild(containerListMovie);
+
+            getMovis(activPage, selectTypeSort(sortForm))
+                .then(post =>  createGetMovie(post))
+                .catch(err => console.log(err));
+        }
+    } else {
+        if(activPage !== 10){
+            allPage[activPage].classList.remove('activ_page');
+            activPage++;
+            allPage[activPage].classList.add('activ_page');
+            removeChild(containerListMovie);
+
+            getMovis(activPage, selectTypeSort(sortForm))
+                .then(post =>  createGetMovie(post))
+                .catch(err => console.log(err));
+        }
+    }
+}
+//Получение базы фильмов по запросу
 function getMovis (page, sortType) {
     return Promise.resolve().then(() => {
         return fetch (`https://api.themoviedb.org/3/discover/movie?api_key=dcc9acdebadcf222b7588db1d80573d0&language=ru-US&sort_by=${sortType}&include_adult=false&include_video=false&page=${page}&with_watch_monetization_types=flatrate`).then(
@@ -66,15 +96,21 @@ function getMovis (page, sortType) {
 
 //Создание полученных фильмов
 function createGetMovie(basafilms) {
+
     const fragment = document.createDocumentFragment();
 
     for(let i=0; i < basafilms.results.length; i++) {
+
         let a = document.createElement('a');
         a.classList.add('item_movie');
         let div = document.createElement('div');
 
         let img = document.createElement('img');
-        img.src = `https://image.tmdb.org/t/p/w500${basafilms.results[i].poster_path}`;
+            if (basafilms.results[i].poster_path === null ) {
+                img.src = `http://placehold.it/200x319`;
+            } else {
+                img.src = `https://image.tmdb.org/t/p/w500${basafilms.results[i].poster_path}`;
+            }
         img.alt = 'Постер фильма';
 
         let p_title = document.createElement('p');
@@ -93,8 +129,8 @@ function createGetMovie(basafilms) {
         div.appendChild(p_title);
         div.appendChild(p_vote);
         div.appendChild(p_release);
-        a.appendChild(div)
-        
+        a.appendChild(div);
+
         fragment.appendChild(a)
     }
     containerListMovie.appendChild(fragment)
@@ -109,25 +145,28 @@ function createPagination () {
     for (let i = 0; i <= 11; i++){
         let li = document.createElement('li');
         let a = document.createElement('a');
-        li.appendChild(a)
-        ul.appendChild(li)
+        li.appendChild(a);
+        ul.appendChild(li);
 
         if( i>0 && i<11 ){
          a.innerHTML = i;
         }
     }
     ul.firstChild.querySelector('a').innerHTML = `‹ Предыдущая`;
-    ul.firstChild.querySelector('a').classList.add('page-prev')
+    ul.firstChild.querySelector('a').classList.add('page-prev');
 
     ul.lastChild.querySelector('a').innerHTML = `Следующая ›`;
-    ul.lastChild.querySelector('a').classList.add('page-next')
+    ul.lastChild.querySelector('a').classList.add('page-next');
 
     ul.childNodes[1].querySelector('a').classList.add('activ_page');
-    
-    fragment.appendChild(ul)
+
+    fragment.appendChild(ul);
     containerPagination.appendChild(fragment)
 
 }
+
+//Определения выбранного типа сортивки
+const selectTypeSort = form =>  form.value;
 
 function searchActivPage (pages) {
     for(let i = 0; i <= pages.length; i++) {
@@ -137,8 +176,10 @@ function searchActivPage (pages) {
                }
            }
 }
+
 //Преобразование даты
 const transformGetData = (getData) => getData.split('-').reverse().join('/');
+
 //функция удаления детей элемента
 function removeChild(elem) {
     while (elem.firstChild) {
@@ -146,100 +187,7 @@ function removeChild(elem) {
     }
   }
 
-/*
-let main = document.getElementById('Main'),
-    game = document.getElementById('Game'),
-    setting = document.getElementById('Settings'),
-    nameUser = "";
-let objUser = [];
 
-// в закладке УРЛа будем хранить   слова
-// #Main - главная
-// #game - игра
-// #settings - настройки
-
-// отслеживаем изменение закладки в УРЛе
-// оно происходит при любом виде навигации
-// в т.ч. при нажатии кнопок браузера ВПЕРЁД/НАЗАД
-window.onhashchange=SwitchToStateFromURLHash;//когда изменяется hash работает функция
-
-// текущее состояние приложения
-let SPAStateH={};
-
-function UpdateToState(NewStateH)
-{
-    SPAStateH=NewStateH; // устанавливаем - это теперь текущее состояние
-
-    console.log('Новое состояние приложения:');
-    console.log(SPAStateH);
-
-    // обновляем вариабельную часть страницы под текущее состояние
-    let PageHTML="";
-    switch ( SPAStateH.pagename )
-    {
-        case 'Main':
-            console.log('Main');
-            break;
-
-        case 'Game':
-            console.log('Game');
-            break;
-
-        case 'Settings':
-            console.log('Settings');
-            break;
-    }
-    //document.getElementById('content').innerHTML = PageHTML;
-}
-
-// вызывается при изменении закладки УРЛа
-// а также при первом открытии страницы
-// читает нужное состояние приложения из закладки УРЛа
-// // и устанавливает+отображает его
-function SwitchToStateFromURLHash() // функция срабатывает при загрузке и сразу открывает  MAIN
-{    let URLHash=window.location.hash;
-    // убираем из закладки УРЛа решётку
-    // (по-хорошему надо ещё убирать восклицательный знак, если есть)
-    let StateStr=URLHash.substr(1);
-    if ( StateStr!="" ) // если закладка непустая, читаем из неё состояние и отображаем
-    {
-        let PartsA=StateStr.split("_");
-        let NewStateH={ pagename: PartsA[0] }; // первая часть закладки - номер страницы
-        UpdateToState(NewStateH);
-    }
-    else
-        UpdateToState( { pagename:'Main' } ); // иначе показываем главную страницу
-}
-// устанавливает в закладке УРЛа новое состояние приложения
-// и затем устанавливает+отображает это состояние
-function SwitchToState(NewStateH)
-{
-    // устанавливаем закладку УРЛа
-    // нужно для правильной работы кнопок навигации браузера
-    // (т.к. записывается новый элемент истории просмотренных страниц)
-    // и для возможности передачи УРЛа другим лицам
-    let StateStr=NewStateH.pagename;
-    document.location.hash=StateStr;
-    // АВТОМАТИЧЕСКИ вызовется SwitchToStateFromURLHash()
-    // т.к. закладка УРЛа изменилась (ЕСЛИ она действительно изменилась)
-}
-function SwitchToMainPage() {
-    SwitchToState( { pagename:'Main' } );
-    clearing();
-}
-
-function SwitchToGamePage() {
-    SwitchToState( { pagename:'Game', } );
-}
-
-function SwitchToAboutPage() {
-    SwitchToState( { pagename:'Settings' } );
-    clearing();
-}
-
-// переключаемся в состояние, которое сейчас прописано в закладке УРЛ
-SwitchToStateFromURLHash();
-*/
 
 /* Demo JS */
 import './mouseEvent';

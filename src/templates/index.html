@@ -5,211 +5,28 @@
     <title>Видео галерея</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
-        <a class="logo" href="#"><img alt="Переход на главную страницу" title="Переход на главную страницу" src="../images/content/logo.png"/></a>
+        <a class="logo" href="#"><img alt="Переход на главную страницу" title="Переход на главную страницу" src="./images/content/logo.png"/></a>
         <a href="#" class="double-border-button">Sign In / Sign Up</a>
     </header>
     <section id="containerAll">
+
+
         <article id="containerHomePage">
 
-            <div id="containerListMovie">
+            <select id="sortForm" name="typeSort">
+                <option value="vote_count.desc" selected>Рейтинг зрителей (убывание)</option>
+                <option value="vote_count.asc">Рейтинг зрителей (возростание)</option>
+                <option value="release_date.desc">Дата выхода (убывание)</option>
+                <option value="release_date.asc">Дата выхода (возростание)</option>
+            </select>
 
-              <!-- <a href="#" class="item_movie">
-                   <div >
-                        <img src="http://placehold.it/200x319" alt ="логотип фильма" />
-                        <p class="title_item">Title</p>
-                        <p class="vote_item">50</p>
-                        <p class="release_item">2021</p>
+            <div id="containerListMovie"></div>
 
-                    </div>
-               </a>
-               <a href="#" class="item_movie">
-                   <div >
-                        <img src="http://placehold.it/200x319" alt ="логотип фильма" />
-                        <p class="title_item">Title</p>
-                        <p class="vote_item">50</p>
-                        <p class="release_item">2021</p>
-
-                    </div>
-               </a>
-               <a href="#" class="item_movie">
-                   <div >
-                        <img src="http://placehold.it/200x319" alt ="логотип фильма" />
-                        <p class="title_item">Title</p>
-                        <p class="vote_item">50</p>
-                        <p class="release_item">2021</p>
-
-                    </div>
-               </a>
-               <a href="#" class="item_movie">
-                   <div >
-                        <img src="http://placehold.it/200x319" alt ="логотип фильма" />
-                        <p class="title_item">Title</p>
-                        <p class="vote_item">50</p>
-                        <p class="release_item">2021</p>
-
-                    </div>
-               </a>
-               <a href="#" class="item_movie">
-                   <div >
-                        <img src="http://placehold.it/200x319" alt ="логотип фильма" />
-                        <p class="title_item">Title</p>
-                        <p class="vote_item">50</p>
-                        <p class="release_item">2021</p>
-
-                    </div>
-               </a>
-               <a href="#" class="item_movie">
-                   <div >
-                        <img src="http://placehold.it/200x319" alt ="логотип фильма" />
-                        <p class="title_item">Title</p>
-                        <p class="vote_item">50</p>
-                        <p class="release_item">2021</p>
-
-                    </div>
-               </a>
-               <a href="#" class="item_movie">
-                <div >
-                     <img src="http://placehold.it/200x319" alt ="логотип фильма" />
-                     <p class="title_item">Title</p>
-                     <p class="vote_item">50</p>
-                     <p class="release_item">2021</p>
-
-                 </div>
-            </a>
-            <a href="#" class="item_movie">
-                <div >
-                     <img src="http://placehold.it/200x319" alt ="логотип фильма" />
-                     <p class="title_item">Title</p>
-                     <p class="vote_item">50</p>
-                     <p class="release_item">2021</p>
-
-                 </div>
-            </a>
-            <a href="#" class="item_movie">
-                <div >
-                     <img src="http://placehold.it/200x319" alt ="логотип фильма" />
-                     <p class="title_item">Title</p>
-                     <p class="vote_item">50</p>
-                     <p class="release_item">2021</p>
-
-                 </div>
-            </a>
-            <a href="#" class="item_movie">
-                <div >
-                     <img src="http://placehold.it/200x319" alt ="логотип фильма" />
-                     <p class="title_item">Title</p>
-                     <p class="vote_item">50</p>
-                     <p class="release_item">2021</p>
-
-                 </div>
-            </a>
-            <a href="#" class="item_movie">
-                <div >
-                     <img src="http://placehold.it/200x319" alt ="логотип фильма" />
-                     <p class="title_item">Title</p>
-                     <p class="vote_item">50</p>
-                     <p class="release_item">2021</p>
-
-                 </div>
-            </a>
-            <a href="#" class="item_movie">
-                <div >
-                     <img src="http://placehold.it/200x319" alt ="логотип фильма" />
-                     <p class="title_item">Title</p>
-                     <p class="vote_item">50</p>
-                     <p class="release_item">2021</p>
-
-                 </div>
-            </a>
-            <a href="#" class="item_movie">
-                <div >
-                     <img src="http://placehold.it/200x319" alt ="логотип фильма" />
-                     <p class="title_item">Title</p>
-                     <p class="vote_item">50</p>
-                     <p class="release_item">2021</p>
-
-                 </div>
-            </a>
-            <a href="#" class="item_movie">
-                <div >
-                     <img src="http://placehold.it/200x319" alt ="логотип фильма" />
-                     <p class="title_item">Title</p>
-                     <p class="vote_item">50</p>
-                     <p class="release_item">2021</p>
-
-                 </div>
-            </a>
-            <a href="#" class="item_movie">
-                <div >
-                     <img src="http://placehold.it/200x319" alt ="логотип фильма" />
-                     <p class="title_item">Title</p>
-                     <p class="vote_item">50</p>
-                     <p class="release_item">2021</p>
-
-                 </div>
-            </a>
-            <a href="#" class="item_movie">
-                <div >
-                     <img src="http://placehold.it/200x319" alt ="логотип фильма" />
-                     <p class="title_item">Title</p>
-                     <p class="vote_item">50</p>
-                     <p class="release_item">2021</p>
-
-                 </div>
-            </a>
-            <a href="#" class="item_movie">
-                <div >
-                     <img src="http://placehold.it/200x319" alt ="логотип фильма" />
-                     <p class="title_item">Title</p>
-                     <p class="vote_item">50</p>
-                     <p class="release_item">2021</p>
-
-                 </div>
-            </a>
-            <a href="#" class="item_movie">
-                <div >
-                     <img src="http://placehold.it/200x319" alt ="логотип фильма" />
-                     <p class="title_item">Title</p>
-                     <p class="vote_item">50</p>
-                     <p class="release_item">2021</p>
-
-                 </div>
-            </a>
-            <a href="#" class="item_movie">
-                <div >
-                     <img src="http://placehold.it/200x319" alt ="логотип фильма" />
-                     <p class="title_item">Title</p>
-                     <p class="vote_item">50</p>
-                     <p class="release_item">2021</p>
-
-                 </div>
-            </a>
-            <a href="#" class="item_movie">
-                <div >
-                     <img src="http://placehold.it/200x319" alt ="логотип фильма" />
-                     <p class="title_item">Title</p>
-                     <p class="vote_item">50</p>
-                     <p class="release_item">2021</p>
-
-                 </div>
-            </a>-->
-            </div>
-
-            <div id="container_pagination">
-         <!--    <ul class="pagination">
-                    <li><a class="page_prev">‹ Предыдущая</a></li>
-                    <li><a class="page_activ">1</a></li>
-                    <li><a>2</a></li>
-                    <li><a class="exppages">...</a></li>
-                    <li><a>9</a></li>
-                    <li><a>10</a></li>
-                    <li><a class="page_next">Следующая ›</a></li>
-             </ul>  --> 
-            </div>
+            <div id="container_pagination"></div>
 
         </article>
 
