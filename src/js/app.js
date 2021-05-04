@@ -2,37 +2,64 @@ import '../scss/app.scss';
 
 /* Your JS Code goes here */
 const containerAll = document.getElementById('containerAll');
-const containerPagination = document.getElementById('container_pagination');
-const containerListMovie = document.getElementById('containerListMovie');
-const sortForm = document.getElementById('sortForm');
+let  currentBasa = [];
+
+window.page = {
+    html: ""
+};
+//const containerPagination = document.getElementById('container_pagination');
+//const containerListMovie = document.getElementById('containerListMovie');
+//const sortForm = document.getElementById('sortForm');
 let activPage = 1;
+
+//добавление структуры главной страницы
+mainPage ();
 
 //При прогрузке страницы
 document.addEventListener ('DOMContentLoaded', function () {
-   // createHomePage();
-    getMovis(1, selectTypeSort(sortForm))
-        .then(post =>  createGetMovie(post))
+    getMovis(1, selectTypeSort(document.getElementById('sortForm')))
+        .then(post =>  {
+            createGetMovie(post);
+
+           // console.log(post)
+        })
         .catch(err => console.log(err));
 
-    createPagination ();
+        createPagination ();
 });
 
-//Управление сортировкой
-sortForm.addEventListener("change", ()=>{
-    let nodePage = containerPagination.querySelectorAll('a');
+function mainPage () {
+    page.html  += `
+        <article id="containerHomePage">
+            <select id="sortForm" name="typeSort">
+                <option value="vote_count.desc" selected>Рейтинг зрителей (убывание)</option>
+                <option value="vote_count.asc">Рейтинг зрителей (возростание)</option>
+                <option value="release_date.desc">Дата выхода (убывание)</option>
+                <option value="release_date.asc">Дата выхода (возростание)</option>
+            </select>
+            <div id="containerListMovie"></div>
+            <div id="container_pagination"></div>
+        </article>
+    `;
+  containerAll.innerHTML = page.html;
+}
 
-    removeChild(containerListMovie);
+//Управление сортировкой
+document.getElementById('sortForm').addEventListener("change", ()=>{
+    let nodePage = document.getElementById('container_pagination').querySelectorAll('a');
+
+    removeChild( document.getElementById('containerListMovie'));
     searchActivPage (nodePage);
 
-     getMovis(activPage, selectTypeSort(sortForm) )
+     getMovis(activPage, selectTypeSort(document.getElementById('sortForm')) )
          .then(post =>  createGetMovie(post))
          .catch(err => console.log(err));
 });
 
 //Управление пагинацией
-containerPagination.addEventListener('click', (e) => {
+document.getElementById('container_pagination').addEventListener('click', (e) => {
     let target = e.target;
-    let nodePage = containerPagination.querySelectorAll('a');
+    let nodePage = document.getElementById('container_pagination').querySelectorAll('a');
     let page = Number(target.innerHTML);
 
     if (target.matches('a')) {
@@ -44,15 +71,15 @@ containerPagination.addEventListener('click', (e) => {
 
             nodePage[activPage].classList.remove('activ_page');
             nodePage[page].classList.add('activ_page');
-            removeChild(containerListMovie);
+            removeChild( document.getElementById('containerListMovie'));
 
-            getMovis(page, selectTypeSort(sortForm))
+            getMovis(page, selectTypeSort(document.getElementById('sortForm')))
                 .then(post =>  createGetMovie(post))
                 .catch(err => console.log(err));
         }
-
     }
 });
+
 
 function rulePrevNext(context, allPage){
     searchActivPage (allPage);
@@ -61,9 +88,9 @@ function rulePrevNext(context, allPage){
             allPage[activPage].classList.remove('activ_page');
             activPage--;
             allPage[activPage].classList.add('activ_page');
-            removeChild(containerListMovie);
+            removeChild( document.getElementById('containerListMovie'));
 
-            getMovis(activPage, selectTypeSort(sortForm))
+            getMovis(activPage, selectTypeSort(document.getElementById('sortForm')))
                 .then(post =>  createGetMovie(post))
                 .catch(err => console.log(err));
         }
@@ -72,9 +99,9 @@ function rulePrevNext(context, allPage){
             allPage[activPage].classList.remove('activ_page');
             activPage++;
             allPage[activPage].classList.add('activ_page');
-            removeChild(containerListMovie);
+            removeChild( document.getElementById('containerListMovie'));
 
-            getMovis(activPage, selectTypeSort(sortForm))
+            getMovis(activPage, selectTypeSort(document.getElementById('sortForm')))
                 .then(post =>  createGetMovie(post))
                 .catch(err => console.log(err));
         }
@@ -89,26 +116,9 @@ function getMovis (page, sortType) {
     })
 }
 
-function createHomePage() {
-
-    const fragment = document.createDocumentFragment();
-    let article = document.createElement('article');
-    article.id ='containerHomePage';
-    let containerMovie = document.createElement('div');
-    containerMovie.id = 'containerListMovie';
-    let container_pagination = document.createElement('div');
-    container_pagination.id = 'container_pagination';
-
-    article.appendChild(containerMovie);
-    article.appendChild(container_pagination);
-
-    fragment.appendChild(article);
-    containerAll.appendChild(fragment);
-
-}
-
 //Создание полученных фильмов
 function createGetMovie(basafilms) {
+    window.currentBasa = basafilms.results.slice();
 
     const fragment = document.createDocumentFragment();
 
@@ -146,7 +156,7 @@ function createGetMovie(basafilms) {
 
         fragment.appendChild(a)
     }
-    containerListMovie.appendChild(fragment)
+    document.getElementById('containerListMovie').appendChild(fragment);
 }
 
 //Создания блока пагинации
@@ -174,7 +184,7 @@ function createPagination () {
     ul.childNodes[1].querySelector('a').classList.add('activ_page');
 
     fragment.appendChild(ul);
-    containerPagination.appendChild(fragment)
+    document.getElementById('container_pagination').appendChild(fragment)
 
 }
 
@@ -203,4 +213,5 @@ function removeChild(elem) {
 
 
 /* Demo JS */
+import './aboutFilm'
 import './mouseEvent';
