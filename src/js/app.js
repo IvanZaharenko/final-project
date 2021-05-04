@@ -1,19 +1,15 @@
 import '../scss/app.scss';
 
 /* Your JS Code goes here */
+const containerAll = document.getElementById('containerAll');
 const containerPagination = document.getElementById('container_pagination');
 const containerListMovie = document.getElementById('containerListMovie');
 const sortForm = document.getElementById('sortForm');
 let activPage = 1;
 
-
-
-
-
-
 //При прогрузке страницы
 document.addEventListener ('DOMContentLoaded', function () {
-
+   // createHomePage();
     getMovis(1, selectTypeSort(sortForm))
         .then(post =>  createGetMovie(post))
         .catch(err => console.log(err));
@@ -39,7 +35,6 @@ containerPagination.addEventListener('click', (e) => {
     let nodePage = containerPagination.querySelectorAll('a');
     let page = Number(target.innerHTML);
 
-
     if (target.matches('a')) {
         if(target.classList.contains('page-prev') || target.classList.contains('page-next')) {
             rulePrevNext(target, nodePage);
@@ -57,7 +52,6 @@ containerPagination.addEventListener('click', (e) => {
         }
 
     }
-
 });
 
 function rulePrevNext(context, allPage){
@@ -86,12 +80,31 @@ function rulePrevNext(context, allPage){
         }
     }
 }
+
 //Получение базы фильмов по запросу
 function getMovis (page, sortType) {
     return Promise.resolve().then(() => {
         return fetch (`https://api.themoviedb.org/3/discover/movie?api_key=dcc9acdebadcf222b7588db1d80573d0&language=ru-US&sort_by=${sortType}&include_adult=false&include_video=false&page=${page}&with_watch_monetization_types=flatrate`).then(
             response => response.json())
     })
+}
+
+function createHomePage() {
+
+    const fragment = document.createDocumentFragment();
+    let article = document.createElement('article');
+    article.id ='containerHomePage';
+    let containerMovie = document.createElement('div');
+    containerMovie.id = 'containerListMovie';
+    let container_pagination = document.createElement('div');
+    container_pagination.id = 'container_pagination';
+
+    article.appendChild(containerMovie);
+    article.appendChild(container_pagination);
+
+    fragment.appendChild(article);
+    containerAll.appendChild(fragment);
+
 }
 
 //Создание полученных фильмов
