@@ -2,43 +2,90 @@ import '../scss/app.scss';
 
 /* Your JS Code goes here */
 const containerAll = document.getElementById('containerAll');
+const logo = document.querySelector('.logo');
+
 let  currentBasa = [];
+let currentBasaGenre = [];
+let activPage = 1;
 
 window.page = {
     html: ""
 };
-//const containerPagination = document.getElementById('container_pagination');
-//const containerListMovie = document.getElementById('containerListMovie');
-//const sortForm = document.getElementById('sortForm');
-let activPage = 1;
+
+
 
 //добавление структуры главной страницы
 mainPage ();
 
 //При прогрузке страницы
 document.addEventListener ('DOMContentLoaded', function () {
+    let nodePage = document.getElementById('container_pagination').querySelectorAll('a');
+
     getMovis(1, selectTypeSort(document.getElementById('sortForm')))
         .then(post =>  {
             createGetMovie(post);
-
-           // console.log(post)
         })
         .catch(err => console.log(err));
 
         createPagination ();
+
+
+    containerAll.addEventListener('click', (event) =>{
+        let target = event.target;
+        // let page = Number(target.innerHTML);
+
+        if (target.classList.contains('work_pag') ) { //кликнули по разным страницам
+            // console.log(activPage);
+            searchActivPage (nodePage);
+            nodePage[activPage].classList.remove('activ_page');
+            nodePage[Number(target.innerHTML)].classList.add('activ_page');
+            removeChild( document.getElementById('containerListMovie'));
+
+            getMovis(Number(target.innerHTML), selectTypeSort(document.getElementById('sortForm')))
+                .then(post =>  createGetMovie(post))
+                .catch(err => console.log(err));
+        }
+        if (target.classList.contains('page-prev')|| target.classList.contains('page-next') ) { // кликнули по стрелкам право/лево
+            rulePrevNext(target, nodePage);
+        }
+
+        if (target.classList.contains('sel_main')){ // кликнули по сортировке
+        }
+
+
+
+
+    });
+
+
+});
+
+logo.addEventListener('click', function () {
+    if (document.getElementById('containerAboutFilm') != null) {
+        document.getElementById('containerAboutFilm').remove();
+    }
+
+    mainPage ();
+    getMovis(1, selectTypeSort(document.getElementById('sortForm')))
+        .then(post =>  {
+            createGetMovie(post);
+        })
+        .catch(err => console.log(err));
+
+    createPagination ();
 });
 
 function mainPage () {
-    page.html  += `
+    page.html = `
         <article id="containerHomePage">
-            <select id="sortForm" name="typeSort">
+            <select id="sortForm" name="typeSort" class="sel_main">
                 <option value="vote_count.desc" selected>Рейтинг зрителей (убывание)</option>
                 <option value="vote_count.asc">Рейтинг зрителей (возростание)</option>
                 <option value="release_date.desc">Дата выхода (убывание)</option>
                 <option value="release_date.asc">Дата выхода (возростание)</option>
             </select>
             <div id="containerListMovie"></div>
-            <div id="container_pagination"></div>
+            <div id="container_pagination" class="pag_contain"></div>
         </article>
     `;
   containerAll.innerHTML = page.html;
@@ -56,29 +103,6 @@ document.getElementById('sortForm').addEventListener("change", ()=>{
          .catch(err => console.log(err));
 });
 
-//Управление пагинацией
-document.getElementById('container_pagination').addEventListener('click', (e) => {
-    let target = e.target;
-    let nodePage = document.getElementById('container_pagination').querySelectorAll('a');
-    let page = Number(target.innerHTML);
-
-    if (target.matches('a')) {
-        if(target.classList.contains('page-prev') || target.classList.contains('page-next')) {
-            rulePrevNext(target, nodePage);
-        } else  {
-
-            searchActivPage (nodePage);
-
-            nodePage[activPage].classList.remove('activ_page');
-            nodePage[page].classList.add('activ_page');
-            removeChild( document.getElementById('containerListMovie'));
-
-            getMovis(page, selectTypeSort(document.getElementById('sortForm')))
-                .then(post =>  createGetMovie(post))
-                .catch(err => console.log(err));
-        }
-    }
-});
 
 
 function rulePrevNext(context, allPage){
@@ -168,6 +192,7 @@ function createPagination () {
     for (let i = 0; i <= 11; i++){
         let li = document.createElement('li');
         let a = document.createElement('a');
+        a.classList.add('work_pag');
         li.appendChild(a);
         ul.appendChild(li);
 
@@ -177,9 +202,11 @@ function createPagination () {
     }
     ul.firstChild.querySelector('a').innerHTML = `‹ Предыдущая`;
     ul.firstChild.querySelector('a').classList.add('page-prev');
+    ul.firstChild.querySelector('a').classList.remove('work_pag');
 
     ul.lastChild.querySelector('a').innerHTML = `Следующая ›`;
     ul.lastChild.querySelector('a').classList.add('page-next');
+    ul.lastChild.querySelector('a').classList.remove('work_pag');
 
     ul.childNodes[1].querySelector('a').classList.add('activ_page');
 
