@@ -3,7 +3,6 @@ const containerAll = document.getElementById('containerAll');
 
 containerAll.addEventListener('click', (event) =>{
     let target = event.target;
-   // let nodePage = document.getElementById('container_pagination').querySelectorAll('a');
 
     if (target.classList.contains('item_movie')) {
         getMoveID(searchMoveID(target))
@@ -13,21 +12,6 @@ containerAll.addEventListener('click', (event) =>{
             .catch(err => console.log(err));
     }
 });
-/*document.addEventListener ('DOMContentLoaded', function () {
-
-    //при клике по постеру
-document.getElementById('containerListMovie').addEventListener('click', (event) => {
-    let target = event.target;
-    if (target.closest('.item_movie') !== null) {
-
-       /!* getMoveID(searchMoveID(target))
-            .then(post =>  {
-                aboutFilmPage (post);
-            })
-            .catch(err => console.log(err));*!/
-        }
-    });
-});*/
 
 function aboutFilmPage (postID) {
     let src = '';

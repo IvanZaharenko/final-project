@@ -1,0 +1,69 @@
+.container_come-in{
+  width: 445px;
+  margin: 0 auto 0 auto;
+}
+.form_Style{
+  margin: 32px 0 0 0;
+  height: 40px;
+  width: 445px;
+  background: #FFFFFF;
+  border: 1px solid #D6D6D6;
+  box-sizing: border-box;
+  border-radius: 2px;
+  padding: 10px 17px 10px 16px;
+}
+.controlLabel {
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 140%;
+  color: #B3B3B3;
+  margin: 2px 0 0 0;
+}
+.control_btn {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 32px 0 20px 0;
+
+  .registration {
+    height: 32px;
+    width: 158px;
+    border: 1px none white;
+    cursor: pointer;
+    position: relative;
+    background: linear-gradient(180deg, #FBFBFB 0%, #F6F6F6 100%);
+    box-shadow: 3px 3px 13px rgba(128, 128, 128, 0.25);
+    border-radius: 58px;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 32px;
+    &:hover {
+      background: linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 53.12%, #EFECEC 100%);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25), 3px 3px 13px rgba(128, 128, 128, 0.25);
+    }
+  }
+  .form_button_come_in {
+    height: 32px;
+    width: 158px;
+    border: 1px none white;
+    cursor: pointer;
+    position: relative;
+    background: linear-gradient(180deg, #FFECB5 0%, #FFE69F 0.01%, #FFD45A 100%);
+    box-shadow: 3px 3px 13px rgba(0, 0, 0, 0.25);
+    border-radius: 58px;
+    &:hover {
+      background: linear-gradient(180deg, #FFEEBC 0%, #FFE69F 36.46%, #FFCF48 68.23%, #FFC317 100%);
+      box-shadow: 3px 3px 13px rgba(0, 0, 0, 0.25);
+    }
+      span {
+      font-style: normal;
+      font-weight: 500;
+      font-size: 20px;
+      line-height: 32px;
+      margin: auto;
+      }
+  }
+
+}

@@ -19,6 +19,8 @@ header{
 .double-border-button {
   max-height: 60px;
   line-height: 30px;
+  width: 185px;
+  text-align: center;
   text-decoration: none;
   display: inline-block;
   margin: 35px 30px 35px 0;
@@ -47,4 +49,21 @@ header{
       height: calc(100% + 10px);
     }
 }
+.user_head {
+    position: absolute;
+    height: 60px;
+    width: 100px;
+    margin: 0;
+    right: 0;
+    left: calc(100% - 314px);
+    top: 35px;
+    border: 2px solid #f9a81b;
+    border-right-color: rgb(249, 168, 27);
+    border-right: 0;
+    cursor: pointer;
+    color: #f9a81b;
+    text-align: center;
+    line-height: 54px;
+    visibility: hidden
 
+}
