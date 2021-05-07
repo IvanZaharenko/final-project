@@ -1,11 +1,16 @@
+
 const comeIn = document.querySelector('.double-border-button');
 
-
+//клик на вход
 comeIn.addEventListener('click', () => {
-    comeInPage()
+    let user_head = document.querySelector('.user_head');
+    if (user_head.innerHTML !== ''){
+        user_head.classList.remove('visable');
+        user_head.innerHTML = '';
+        document.querySelector('.double-border-button').innerHTML = 'Sign In / Sign Up';
+
+    } else comeInPage()
 });
-
-
 
 
 /*//скачиваем базу вопросов и работаем с ней
@@ -27,8 +32,6 @@ function getJSONFile(url,callback) {
         };
     req.send(null);
 }
-
-
 
 function comeInPage() {
     page.html  = `
@@ -65,8 +68,8 @@ function comeInPage() {
                                     <div class="control_btn">
                                         <button type="submit"
                                                 id="start_take_home_button"
-                                                class="form_button_come_in">
-                                            <span>Sign </span>
+                                                class="form_button_come_in upComeIn">
+                                           Sign 
                                         </button>
     
                                         <button
@@ -74,7 +77,7 @@ function comeInPage() {
                                                 class="registration"
                                                 id="finish_take_home_button"
                                         >
-                                            <span>Registration</span>
+                                            Registration
                                         </button>
                                     </div>
                                 </form>
@@ -83,7 +86,6 @@ function comeInPage() {
     
 </div>
     `;
-   // document.getElementById('containerListMovie').remove();
     while (containerAll.firstChild) {
         containerAll.removeChild(containerAll.firstChild);
     }

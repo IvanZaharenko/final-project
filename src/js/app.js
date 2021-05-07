@@ -2,41 +2,35 @@ import '../scss/app.scss';
 
 /* Your JS Code goes here */
 window.users = [
-    {user: 'Admin', password: '1', email: 'admin@gmail.com'},
-    {user: 'Ivan', password: '2', email: 'IV@gmail.com'},
+    {user: 'Admin', userLastName:'', password: '1', email: 'admin@gmail.com', authorized: false},
+    {user: 'Ivan',userLastName:'', password: '2', email: 'IV@gmail.com',  authorized: false},
 ];
-
-
+window.page = { html: "" };
 const containerAll = document.getElementById('containerAll');
-const logo = document.querySelector('.logo');
+const user_head = document.querySelector('.user_head');
 
+const logo = document.querySelector('.logo');
 let  currentBasa = [];
 let currentBasaGenre = [];
 let activPage = 1;
-
-window.page = {
-    html: ""
-};
 
 //добавление структуры главной страницы
 mainPage ();
 
 //При прогрузке страницы
 document.addEventListener ('DOMContentLoaded', function () {
-
+    //отправляется запрос за порцией фильмов
     getMovis(1, selectTypeSort(document.getElementById('sortForm')))
-        .then(post =>  {
+        .then(post =>  { //при получении создаём страницу
             createGetMovie(post);
         })
-        .catch(err => console.log(err));
-
-        createPagination ();
+        .catch(err => console.log(err)); //при ошибке сообщаение в консоль
+        createPagination ();  // создание пагинации
 
     containerAll.addEventListener('click', (event) =>{
         let target = event.target;
-        //let page = Number(target.innerHTML);
-
-        if (target.classList.contains('work_pag') ) { //кликнули по разным страницам
+        //кликнули по разным страницам
+        if (target.classList.contains('work_pag') ) {
             let nodePage = document.getElementById('container_pagination').querySelectorAll('a');
             searchActivPage (nodePage);
             nodePage[activPage].classList.remove('activ_page');
@@ -46,30 +40,28 @@ document.addEventListener ('DOMContentLoaded', function () {
             getMovis(Number(target.innerHTML), selectTypeSort(document.getElementById('sortForm')))
                 .then(post =>  createGetMovie(post))
                 .catch(err => console.log(err));
-        }
-        if (target.classList.contains('page-prev')|| target.classList.contains('page-next') ) { // кликнули по стрелкам право/лево
+        }// кликнули по стрелкам право/лево
+        if (target.classList.contains('page-prev')|| target.classList.contains('page-next') ) {
             let nodePage = document.getElementById('container_pagination').querySelectorAll('a');
             rulePrevNext(target, nodePage);
         }
     });
-
+    //выбор сортировки
     containerAll.addEventListener('change', () => {
         let target = event.target;
         if (target.classList.contains('sel_main')) {
             let nodePage = document.getElementById('container_pagination').querySelectorAll('a');
-
             removeChild( document.getElementById('containerListMovie'));
             searchActivPage (nodePage);
-
+            //получение новой порции с сортировкой по выбору
             getMovis(activPage, selectTypeSort(document.getElementById('sortForm')) )
                 .then(post =>  createGetMovie(post))
                 .catch(err => console.log(err));
         }
     })
-
-
 });
 
+//переход на главнуб страницу при клике на лого
 logo.addEventListener('click', function () {
     if (document.getElementById('containerAboutFilm') != null) {
         document.getElementById('containerAboutFilm').remove();
@@ -85,10 +77,10 @@ logo.addEventListener('click', function () {
     createPagination ();
 });
 
+//при в нажатие на авторизацию
 containerAll.addEventListener('click', () =>{
     let target = event.target;
-    let user_head = document.querySelector('.user_head');
-    if (!target.classList.contains('form_button_come_in')){
+    if (!target.classList.contains('upComeIn')){
         return
     }
 
@@ -102,21 +94,210 @@ containerAll.addEventListener('click', () =>{
         password.value ='';
         alert('Неправильный электронный адрес, или пароль');
     } else {
-        user_head.innerHTML = activUser[0].user;
-        user_head.classList.add('visable');
-        document.querySelector('.double-border-button').innerHTML = 'Sign Up';
 
+        //отображает юзера при входе
+        autorizationUser(user_head,activUser );
+
+        //создаём главную страницу
         mainPage ();
         getMovis(1, selectTypeSort(document.getElementById('sortForm')))
             .then(post =>  {
                 createGetMovie(post);
             })
             .catch(err => console.log(err));
-
         createPagination ();
+       // console.log(activUser)
     }
 });
 
+//при нажатии на регистрацию
+containerAll.addEventListener('click', () =>{
+    let target = event.target;
+    if (!target.classList.contains('registration')){
+        return
+    }
+    page.html  = `
+    <div class="container_come-in">
+        <div class="formWrapper">
+            <h2>Registration</h2>
+            <form action="#"
+                  method="get"
+                  name="registrationForm"
+            >
+                <div>
+                                        <div>
+                                          <input type="text"
+                                                 id="registrationName"
+                                                 placeholder="Name"
+                                                 minlength="6"
+                                                 required
+                                                 autofocus
+                                                 class="DisainPlaceholder form_Style"
+                                           >
+                                           <label class="controlLabel" for="registrationName">Обязательное поле для заполнения</label>
+                                        </div>
+                                        
+                                        <div>
+                                          <input type="text"
+                                                 id="registrationSurname"
+                                                 placeholder="Surname"
+                                                 minlength="6"
+                                                 required
+                                                 class="DisainPlaceholder form_Style"
+                                          >
+                                          <label class="controlLabel" for="registrationSurname">Обязательное поле для заполнения</label>
+                                        </div>
+                                        
+                                        <div>
+                                          <input type="password"
+                                                 id="registrationPassword"
+                                                 placeholder="Password"
+                                                 minlength="6"
+                                                 required
+                                                 class="DisainPlaceholder form_Style"
+                                          >
+                                          <label class="controlLabel" for="registrationPassword">Обязательное поле для заполнения</label>
+                                        </div>
+                                         
+                                        <div>
+                                          <input type="password"
+                                                 id="registrationConfirm"
+                                                 placeholder="Confirm password"
+                                                 minlength="6"
+                                                 required
+                                                 class="DisainPlaceholder form_Style"
+                                          >
+                                          <label class="controlLabel" for="registrationConfirm">Обязательное поле для заполнения</label>
+                                        </div>
+                                         <div>
+                                          <input type="email"
+                                                id="registrationEmail"
+                                                placeholder="Email"
+                                                required
+                                                class="DisainPlaceholder form_Style"
+                                                >
+                                           <label class="controlLabel" for="registrationEmail">Обязательное поле для заполнения</label>
+                                         </div>     
+                                    </div>
+                <div class="control_btn">
+                    <button type="submit"
+                            id="start_take_home_button"
+                            class="form_button_come_in upRegistrtion">
+                        Sign Up
+                    </button>
+                    <button  type="reset"
+                             class="registration"
+                             id="finish_take_home_button"
+                    >
+                           Clear
+                    </button>
+                </div>
+            </form>
+                      
+        </div>
+    </div>
+    `;
+    while (containerAll.firstChild) {
+        containerAll.removeChild(containerAll.firstChild);
+    }
+    containerAll.innerHTML = page.html;
+});
+
+//проверка введенной формы регистрации
+containerAll.addEventListener('click', () => {
+    let target = event.target;
+    if(!target.classList.contains('upRegistrtion')) {
+        return
+    }
+
+    let registrationName = document.getElementById('registrationName');
+    let registrationSurname = document.getElementById('registrationSurname');
+    let registrationPassword = document.getElementById('registrationPassword');
+    let registrationConfirm = document.getElementById('registrationConfirm');
+    let registrationEmail = document.getElementById('registrationEmail');
+
+    //let regForm = document.forms["registrationForm"];
+    let newUsers = [{user: '', userLastName:'', password: '', email: '', authorized: true}];
+
+    //по нажатию на регистрацию проверяет заполнение формы
+
+
+    if (registrationName.value === '' || registrationSurname.value === '' || registrationPassword.value === '' || registrationConfirm.value === '' || registrationEmail.value === '' ) {
+        alert('Заполните пустые поля ');
+            if (registrationPassword.value !== registrationConfirm.value) {
+                alert('Пароли не совпадают');
+            }
+    } else {
+        newUsers.user = registrationName.value;
+        newUsers.userLastName = registrationSurname.value;
+        newUsers.password = registrationPassword.value;
+        newUsers.email = registrationEmail.value;
+       // console.log(newUsers)
+        console.log(newUsers);
+
+       //отображает юзера при входе
+        autorizationUser(user_head, newUsers );
+
+        /*  users.push(newUsers[0]);
+         console.log(users)*/
+    }
+
+
+
+      /* if (regForm[i].value === '' || regForm[i].value.length < 6 ){ //если 1 из строк пустая и не соответствует условию просим заполнить
+              switch (i) {
+                  case 0: //если имя
+                      alert('Заполните поле Name');
+                      return;
+                  case 1 : //если фамилия
+                      alert('Заполните поле Surname');
+                      return;
+                  case 2: //если пароль
+                      alert('Заполните поле Password');
+                      return;
+                  case 3: //если email
+                      alert('Заполните поле Confirm Password');
+                      return;
+                      case 4: //если email
+                      alert('Заполните поле Email');
+                      return;
+              }
+          } else {
+              console.log(2)
+          }*/
+
+
+    /*if (regForm[3].value !== regForm[2].value && regForm[2].value === '')
+        {alert('Пароли не совпадают');
+    } else {
+        //заполним новые данные
+        for (let j = 0; j <= regForm.length; j++) {
+            switch (j) {
+                case 0: //если имя
+                    newUsers.user = regForm[j].value;
+                    break;
+                case 1 : //если фамилия
+                    newUsers.userLastName = regForm[j].value;
+                    break;
+                case 2: //если пароль
+                    newUsers.password = regForm[j].value;
+                    break;
+                case 4: //если email
+                    newUsers.email = regForm[j].value;
+                    break;
+            }
+        }
+
+
+
+    }
+
+*/
+
+
+});
+
+//отрисовка главной страницы
 function mainPage () {
     page.html = `
         <article id="containerHomePage">
@@ -133,47 +314,17 @@ function mainPage () {
   containerAll.innerHTML = page.html;
 }
 
-/*//Управление сортировкой
-document.getElementById('sortForm').addEventListener("change", ()=>{
-   /!* let nodePage = document.getElementById('container_pagination').querySelectorAll('a');
 
-    removeChild( document.getElementById('containerListMovie'));
-    searchActivPage (nodePage);
-
-     getMovis(activPage, selectTypeSort(document.getElementById('sortForm')) )
-         .then(post =>  createGetMovie(post))
-         .catch(err => console.log(err));*!/
-});*/
-
-
-
-function rulePrevNext(context, allPage){
-    searchActivPage (allPage);
-    if (context.classList.contains('page-prev')){
-        if(activPage !== 1){
-            allPage[activPage].classList.remove('activ_page');
-            activPage--;
-            allPage[activPage].classList.add('activ_page');
-            removeChild( document.getElementById('containerListMovie'));
-
-            getMovis(activPage, selectTypeSort(document.getElementById('sortForm')))
-                .then(post =>  createGetMovie(post))
-                .catch(err => console.log(err));
-        }
-    } else {
-        if(activPage !== 10){
-            allPage[activPage].classList.remove('activ_page');
-            activPage++;
-            allPage[activPage].classList.add('activ_page');
-            removeChild( document.getElementById('containerListMovie'));
-
-            getMovis(activPage, selectTypeSort(document.getElementById('sortForm')))
-                .then(post =>  createGetMovie(post))
-                .catch(err => console.log(err));
+function autorizationUser (block, userInSystem) {
+    block.innerHTML = userInSystem[0].user;
+    block.classList.add('visable');
+    document.querySelector('.double-border-button').innerHTML = 'Sign Up';
+    for (let i = 0; i < users.length; i++) {
+        if (users[i].user === userInSystem[0].user) {
+            users[i].authorized = true
         }
     }
 }
-
 //Получение базы фильмов по запросу
 function getMovis (page, sortType) {
     return Promise.resolve().then(() => {
@@ -257,6 +408,34 @@ function createPagination () {
 
 }
 
+//стрелки вправо и влево
+function rulePrevNext(context, allPage){
+    searchActivPage (allPage);
+    if (context.classList.contains('page-prev')){
+        if(activPage !== 1){
+            allPage[activPage].classList.remove('activ_page');
+            activPage--;
+            allPage[activPage].classList.add('activ_page');
+            removeChild( document.getElementById('containerListMovie'));
+
+            getMovis(activPage, selectTypeSort(document.getElementById('sortForm')))
+                .then(post =>  createGetMovie(post))
+                .catch(err => console.log(err));
+        }
+    } else {
+        if(activPage !== 10){
+            allPage[activPage].classList.remove('activ_page');
+            activPage++;
+            allPage[activPage].classList.add('activ_page');
+            removeChild( document.getElementById('containerListMovie'));
+
+            getMovis(activPage, selectTypeSort(document.getElementById('sortForm')))
+                .then(post =>  createGetMovie(post))
+                .catch(err => console.log(err));
+        }
+    }
+}
+
 //Определения выбранного типа сортивки
 const selectTypeSort = form =>  form.value;
 
@@ -278,7 +457,6 @@ function removeChild(elem) {
       elem.removeChild(elem.firstChild);
     }
   }
-
 
 
 /* Demo JS */
