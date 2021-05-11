@@ -9,6 +9,9 @@ comeIn.addEventListener('click', () => {
         user_head.innerHTML = '';
         document.querySelector('.double-border-button').innerHTML = 'Sign In / Sign Up';
 
+        adminMode = false;
+       // console.log(adminMode)
+
     } else comeInPage()
 });
 

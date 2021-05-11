@@ -6,13 +6,15 @@ window.users = [
     {user: 'Ivan',userLastName:'', password: '2', email: 'IV@gmail.com',  authorized: false},
 ];
 window.page = { html: "" };
+window.adminMode = false;
+
 const containerAll = document.getElementById('containerAll');
 const user_head = document.querySelector('.user_head');
-
 const logo = document.querySelector('.logo');
+
 let  currentBasa = [];
-let currentBasaGenre = [];
 let activPage = 1;
+//let currentBasaGenre = [];
 
 //добавление структуры главной страницы
 mainPage ();
@@ -58,7 +60,8 @@ document.addEventListener ('DOMContentLoaded', function () {
                 .then(post =>  createGetMovie(post))
                 .catch(err => console.log(err));
         }
-    })
+    });
+
 });
 
 //переход на главнуб страницу при клике на лого
@@ -94,7 +97,6 @@ containerAll.addEventListener('click', () =>{
         password.value ='';
         alert('Неправильный электронный адрес, или пароль');
     } else {
-
         //отображает юзера при входе
         autorizationUser(user_head,activUser );
 
@@ -106,7 +108,12 @@ containerAll.addEventListener('click', () =>{
             })
             .catch(err => console.log(err));
         createPagination ();
-       // console.log(activUser)
+
+        if (email.value === 'admin@gmail.com') {
+           // var adminMode;
+            adminMode = true;
+            console.log(adminMode);
+        }
     }
 });
 
@@ -129,7 +136,7 @@ containerAll.addEventListener('click', () =>{
                                           <input type="text"
                                                  id="registrationName"
                                                  placeholder="Name"
-                                                 minlength="6"
+                                                 minlength="4"
                                                  required
                                                  autofocus
                                                  class="DisainPlaceholder form_Style"
@@ -209,92 +216,39 @@ containerAll.addEventListener('click', () => {
     if(!target.classList.contains('upRegistrtion')) {
         return
     }
-
     let registrationName = document.getElementById('registrationName');
     let registrationSurname = document.getElementById('registrationSurname');
     let registrationPassword = document.getElementById('registrationPassword');
     let registrationConfirm = document.getElementById('registrationConfirm');
     let registrationEmail = document.getElementById('registrationEmail');
-
-    //let regForm = document.forms["registrationForm"];
-    let newUsers = [{user: '', userLastName:'', password: '', email: '', authorized: true}];
+    let newUsers = {user: '', userLastName:'', password: '', email: ''};
 
     //по нажатию на регистрацию проверяет заполнение формы
-
-
     if (registrationName.value === '' || registrationSurname.value === '' || registrationPassword.value === '' || registrationConfirm.value === '' || registrationEmail.value === '' ) {
         alert('Заполните пустые поля ');
-            if (registrationPassword.value !== registrationConfirm.value) {
-                alert('Пароли не совпадают');
-            }
     } else {
-        newUsers.user = registrationName.value;
-        newUsers.userLastName = registrationSurname.value;
-        newUsers.password = registrationPassword.value;
-        newUsers.email = registrationEmail.value;
-       // console.log(newUsers)
-        console.log(newUsers);
-
-       //отображает юзера при входе
-        autorizationUser(user_head, newUsers );
-
-        /*  users.push(newUsers[0]);
-         console.log(users)*/
-    }
-
-
-
-      /* if (regForm[i].value === '' || regForm[i].value.length < 6 ){ //если 1 из строк пустая и не соответствует условию просим заполнить
-              switch (i) {
-                  case 0: //если имя
-                      alert('Заполните поле Name');
-                      return;
-                  case 1 : //если фамилия
-                      alert('Заполните поле Surname');
-                      return;
-                  case 2: //если пароль
-                      alert('Заполните поле Password');
-                      return;
-                  case 3: //если email
-                      alert('Заполните поле Confirm Password');
-                      return;
-                      case 4: //если email
-                      alert('Заполните поле Email');
-                      return;
-              }
-          } else {
-              console.log(2)
-          }*/
-
-
-    /*if (regForm[3].value !== regForm[2].value && regForm[2].value === '')
-        {alert('Пароли не совпадают');
-    } else {
-        //заполним новые данные
-        for (let j = 0; j <= regForm.length; j++) {
-            switch (j) {
-                case 0: //если имя
-                    newUsers.user = regForm[j].value;
-                    break;
-                case 1 : //если фамилия
-                    newUsers.userLastName = regForm[j].value;
-                    break;
-                case 2: //если пароль
-                    newUsers.password = regForm[j].value;
-                    break;
-                case 4: //если email
-                    newUsers.email = regForm[j].value;
-                    break;
-            }
+        if (registrationPassword.value !== registrationConfirm.value) {
+        alert('Пароли не совпадают');
+        } else {
+            newUsers.user = registrationName.value;
+            newUsers.userLastName = registrationSurname.value;
+            newUsers.password = registrationPassword.value;
+            newUsers.email = registrationEmail.value;
+            users.push(newUsers);
+            //отображает юзера при входе
+            user_head.innerHTML = registrationName.value;
+            user_head.classList.add('visable');
+            document.querySelector('.double-border-button').innerHTML = 'Sign Up';
+            //создаём главную страницу
+            mainPage ();
+            getMovis(1, selectTypeSort(document.getElementById('sortForm')))
+                .then(post =>  {
+                    createGetMovie(post);
+                })
+                .catch(err => console.log(err));
+            createPagination ();
         }
-
-
-
     }
-
-*/
-
-
 });
 
 //отрисовка главной страницы
@@ -307,24 +261,32 @@ function mainPage () {
                 <option value="release_date.desc">Дата выхода (убывание)</option>
                 <option value="release_date.asc">Дата выхода (возростание)</option>
             </select>
-            <div id="containerListMovie"></div>
+            <div id="containerListMovie" class="listMovie"></div>
             <div id="container_pagination" class="pag_contain"></div>
         </article>
     `;
   containerAll.innerHTML = page.html;
 }
 
+function createAdminTools() {
+    let listMovie = containerAll.querySelector('.listMovie');
+
+    console.log(listMovie.childNodes[0].style.display = 'none')
+}
 
 function autorizationUser (block, userInSystem) {
     block.innerHTML = userInSystem[0].user;
     block.classList.add('visable');
     document.querySelector('.double-border-button').innerHTML = 'Sign Up';
-    for (let i = 0; i < users.length; i++) {
+   /* for (let i = 0; i < users.length; i++) {
         if (users[i].user === userInSystem[0].user) {
             users[i].authorized = true
         }
-    }
+    }*/
 }
+
+
+
 //Получение базы фильмов по запросу
 function getMovis (page, sortType) {
     return Promise.resolve().then(() => {

@@ -3,6 +3,7 @@ body{
 }
 #containerAll {
   min-height: calc(100vh - 130px);
+  position: relative;
 }
 #containerHomePage{
   margin: 0 50px;
@@ -19,7 +20,7 @@ body{
   border: 1px solid #494a49;
   height: 30px;
   width: 300px;
-  margin-left: 50px;
+  margin: 20px 0 0 100px;
   color: white;
 }
 .item_movie{
