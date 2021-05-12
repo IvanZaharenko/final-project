@@ -11,6 +11,8 @@ window.adminMode = false;
 const containerAll = document.getElementById('containerAll');
 const user_head = document.querySelector('.user_head');
 const logo = document.querySelector('.logo');
+const comeIn = document.querySelector('.double-border-button');
+
 
 let  currentBasa = [];
 let activPage = 1;
@@ -31,6 +33,7 @@ document.addEventListener ('DOMContentLoaded', function () {
 
     containerAll.addEventListener('click', (event) =>{
         let target = event.target;
+
         //кликнули по разным страницам
         if (target.classList.contains('work_pag') ) {
             let nodePage = document.getElementById('container_pagination').querySelectorAll('a');
@@ -97,6 +100,10 @@ containerAll.addEventListener('click', () =>{
         password.value ='';
         alert('Неправильный электронный адрес, или пароль');
     } else {
+        if (email.value === 'admin@gmail.com') {
+        adminMode = true;
+        console.log(adminMode);
+        }
         //отображает юзера при входе
         autorizationUser(user_head,activUser );
 
@@ -108,12 +115,6 @@ containerAll.addEventListener('click', () =>{
             })
             .catch(err => console.log(err));
         createPagination ();
-
-        if (email.value === 'admin@gmail.com') {
-           // var adminMode;
-            adminMode = true;
-            console.log(adminMode);
-        }
     }
 });
 
@@ -239,6 +240,7 @@ containerAll.addEventListener('click', () => {
             user_head.innerHTML = registrationName.value;
             user_head.classList.add('visable');
             document.querySelector('.double-border-button').innerHTML = 'Sign Up';
+
             //создаём главную страницу
             mainPage ();
             getMovis(1, selectTypeSort(document.getElementById('sortForm')))
@@ -253,7 +255,24 @@ containerAll.addEventListener('click', () => {
 
 //отрисовка главной страницы
 function mainPage () {
-    page.html = `
+    if (adminMode){
+        page.html = `
+        <article id="containerHomePage">
+            <select id="sortForm" name="typeSort" class="sel_main">
+                <option value="vote_count.desc" selected>Рейтинг зрителей (убывание)</option>
+                <option value="vote_count.asc">Рейтинг зрителей (возростание)</option>
+                <option value="release_date.desc">Дата выхода (убывание)</option>
+                <option value="release_date.asc">Дата выхода (возростание)</option>
+            </select>
+            <a class="addFilm floating-button">+</a><div 
+            id="containerListMovie" class="listMovie"></div>
+            <div id="container_pagination" class="pag_contain"></div>
+        </article>
+    `;
+    containerAll.innerHTML = page.html;
+
+    } else {
+        page.html = `
         <article id="containerHomePage">
             <select id="sortForm" name="typeSort" class="sel_main">
                 <option value="vote_count.desc" selected>Рейтинг зрителей (убывание)</option>
@@ -265,13 +284,9 @@ function mainPage () {
             <div id="container_pagination" class="pag_contain"></div>
         </article>
     `;
-  containerAll.innerHTML = page.html;
-}
+    containerAll.innerHTML = page.html;
+    }
 
-function createAdminTools() {
-    let listMovie = containerAll.querySelector('.listMovie');
-
-    console.log(listMovie.childNodes[0].style.display = 'none')
 }
 
 function autorizationUser (block, userInSystem) {
@@ -284,8 +299,6 @@ function autorizationUser (block, userInSystem) {
         }
     }*/
 }
-
-
 
 //Получение базы фильмов по запросу
 function getMovis (page, sortType) {
@@ -302,6 +315,7 @@ function createGetMovie(basafilms) {
     const fragment = document.createDocumentFragment();
 
     for(let i=0; i < basafilms.results.length; i++) {
+
 
         let a = document.createElement('a');
         a.classList.add('item_movie');
@@ -333,9 +347,98 @@ function createGetMovie(basafilms) {
         div.appendChild(p_release);
         a.appendChild(div);
 
+        if (adminMode){
+            let deleteFilm = document.createElement('a');
+            deleteFilm.innerHTML = '☒';
+            deleteFilm.classList.add('deleteFilm');
+            a.appendChild(deleteFilm);
+        }
         fragment.appendChild(a)
     }
     document.getElementById('containerListMovie').appendChild(fragment);
+    console.log(adminMode)
+}
+
+//При клике на кнопку входа
+comeIn.addEventListener('click', () => {
+    let user_head = document.querySelector('.user_head');
+    if (user_head.innerHTML !== ''){
+        user_head.classList.remove('visable');
+        user_head.innerHTML = '';
+        document.querySelector('.double-border-button').innerHTML = 'Sign In / Sign Up';
+        adminMode = false;
+         console.log('ыход');
+
+        //создаём главную страницу
+        mainPage ();
+        getMovis(1, selectTypeSort(document.getElementById('sortForm')))
+            .then(post =>  {
+                createGetMovie(post);
+            })
+            .catch(err => console.log(err));
+        createPagination ();
+
+    } else comeInPage()
+});
+
+// создаётся страница формы-входа.
+function comeInPage() {
+    page.html  = `
+    <div class="container_come-in">
+                        <div class="formWrapper">
+                            <form action="#"
+                                      method="get"
+                                      name="comeInForm"
+                                >
+                                    <div>
+                                        <div>
+                                            <input type="email"
+                                                   id="comeInEmailForm"
+                                                 
+                                                   placeholder="Email"
+                                                   required
+                                                   autofocus
+                                                   class="DisainPlaceholder form_Style"
+                                            >
+                                            <label class="controlLabel" for="comeInEmailForm">Обязательное поле для заполнения</label>
+
+                                        </div>
+                                        <div>
+                                            <input type="password"
+                                                   id="comeInPhoneForm"
+                                                   placeholder="Password"
+                                                   required
+                                                   class="DisainPlaceholder form_Style"
+                                            >
+                                            <label class="controlLabel" for="comeInPhoneForm">Обязательное поле для заполнения</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="control_btn">
+                                        <button type="submit"
+                                                id="start_take_home_button"
+                                                class="form_button_come_in upComeIn">
+                                           Sign 
+                                        </button>
+    
+                                        <button
+                                                type="button"
+                                                class="registration"
+                                                id="finish_take_home_button"
+                                        >
+                                            Registration
+                                        </button>
+                                    </div>
+                                </form>
+                      
+                    </div>
+    
+</div>
+    `;
+    while (containerAll.firstChild) {
+        containerAll.removeChild(containerAll.firstChild);
+    }
+    containerAll.innerHTML = page.html;
 }
 
 //Создания блока пагинации
@@ -423,5 +526,4 @@ function removeChild(elem) {
 
 /* Demo JS */
 import './aboutFilm'
-import './come_in'
 import './mouseEvent';

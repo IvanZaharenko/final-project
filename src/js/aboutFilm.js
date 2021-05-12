@@ -26,7 +26,30 @@ function aboutFilmPage (postID) {
     } else {
         src = `https://image.tmdb.org/t/p/w500${postID.poster_path}`;
     }
-    page.html  = `
+
+    document.getElementById('containerListMovie').remove();
+
+    if (adminMode){
+        page.html  = `
+        <article id="containerAboutFilm">
+            <div id="about-film_poster">
+                <img src="${src}" alt="Постер фильма"/>
+                <a class="deleteFilm_about">☒</a>
+                <a class="redactFilm">&#9998;</a>
+            </div>
+            <div id="about-film_info">
+                <h2 class="about_title"> ${postID.title}</h2>
+                <p class="about_miniOverview">${postID.tagline}</p>
+                <p class="about_release">Год выпуска: <span class="white_color"> ${postID.release_date.split('-').reverse().join('/')}</span></p>
+                <p class="about_genres">Жанры:  <span class="white_color">${genre + '.'}</span></p>
+                <p class="about_vote">рейтинг: <span class="white_color">${postID.vote_average}/10</span></p>
+                <p class="about_overview">Описание фильма: <br><br><span class="white_color">${postID.overview}</span></p>
+            </div>
+        </article>
+    `;
+    containerAll.innerHTML = page.html;
+    } else {
+        page.html  = `
         <article id="containerAboutFilm">
             <div id="about-film_poster">
                 <img src="${src}" alt="Постер фильма"/>
@@ -41,10 +64,11 @@ function aboutFilmPage (postID) {
             </div>
         </article>
     `;
-
-    document.getElementById('containerListMovie').remove();
-
     containerAll.innerHTML = page.html;
+    }
+
+
+
 }
 
 //Получить фильм по выбранному id

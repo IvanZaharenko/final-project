@@ -86,6 +86,41 @@ body{
 -khtml-user-select: none;
 user-select: none;
 }
+.deleteFilm{
+  position: absolute;
+  font-size: 43px;
+  margin: 0;
+  color: #f9a81b;
+  top: calc(100% - 40px);
+  left: calc(100% - 34px);
+  width: 35px;
+  height: 41px;
+  visibility: hidden;
+}
+.floating-button {
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-block;
+  width: 40px;
+  height: 30px;
+  line-height: 30px;
+  margin: 20px 0 0 20px;
+  text-align: center;
+  font-weight: 600;
+  color: white;
+  background-color: #22ae95;
+  transition: 0.3s;
+  &:hover{
+    background: #2EE59D;
+    box-shadow: 0 15px 20px rgba(46, 229, 157, .4);
+    color: white;
+    transform: translateY(-7px);
+  }
+}
+
+.addFilm{
+
+}
 .visable {
   visibility: visible;
 }
