@@ -78,6 +78,7 @@ function getMoveID (id) {
             response => response.json())
     })
 }
+
 //Получить фильм по выбранному id
 const searchMoveID = (context) => {
     let item = 0;

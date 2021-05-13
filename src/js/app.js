@@ -7,6 +7,8 @@ window.users = [
 ];
 window.page = { html: "" };
 window.adminMode = false;
+window.idDeleteFilm = [];
+window.newFilm = [];
 
 const containerAll = document.getElementById('containerAll');
 const user_head = document.querySelector('.user_head');
@@ -14,15 +16,17 @@ const logo = document.querySelector('.logo');
 const comeIn = document.querySelector('.double-border-button');
 
 
-let  currentBasa = [];
 let activPage = 1;
-//let currentBasaGenre = [];
 
 //добавление структуры главной страницы
 mainPage ();
 
 //При прогрузке страницы
 document.addEventListener ('DOMContentLoaded', function () {
+    let currentBasa = [];
+    let basaGenre = [];
+
+
     //отправляется запрос за порцией фильмов
     getMovis(1, selectTypeSort(document.getElementById('sortForm')))
         .then(post =>  { //при получении создаём страницу
@@ -30,6 +34,7 @@ document.addEventListener ('DOMContentLoaded', function () {
         })
         .catch(err => console.log(err)); //при ошибке сообщаение в консоль
         createPagination ();  // создание пагинации
+    //
 
     containerAll.addEventListener('click', (event) =>{
         let target = event.target;
@@ -51,6 +56,7 @@ document.addEventListener ('DOMContentLoaded', function () {
             rulePrevNext(target, nodePage);
         }
     });
+
     //выбор сортировки
     containerAll.addEventListener('change', () => {
         let target = event.target;
@@ -58,6 +64,7 @@ document.addEventListener ('DOMContentLoaded', function () {
             let nodePage = document.getElementById('container_pagination').querySelectorAll('a');
             removeChild( document.getElementById('containerListMovie'));
             searchActivPage (nodePage);
+
             //получение новой порции с сортировкой по выбору
             getMovis(activPage, selectTypeSort(document.getElementById('sortForm')) )
                 .then(post =>  createGetMovie(post))
@@ -68,19 +75,152 @@ document.addEventListener ('DOMContentLoaded', function () {
 });
 
 //переход на главнуб страницу при клике на лого
-logo.addEventListener('click', function () {
-    if (document.getElementById('containerAboutFilm') != null) {
-        document.getElementById('containerAboutFilm').remove();
-    }
+logo.addEventListener('click',  () => createHomePage());
 
-    mainPage ();
-    getMovis(1, selectTypeSort(document.getElementById('sortForm')))
-        .then(post =>  {
-            createGetMovie(post);
+//удаление фильма с главной страницы в режиме admin
+containerAll.addEventListener('click', () => {
+    let target = event.target;
+    if (!target.classList.contains('deleteFilm')) return ;
+
+    let item = target.closest('.item_movie');
+    let title = item.querySelector('.title_item').innerHTML;
+    item.remove();
+
+     for (let i = 0; i < currentBasa.length; i++){
+         if (title === currentBasa[i].title){
+            idDeleteFilm.push(currentBasa[i].id);
+            currentBasa.splice(i,1);
+             break
+         }
+     }
+});
+//добавление нового фильма
+containerAll.addEventListener('click', function () {
+    let target = event.target;
+   if (!target.classList.contains('addFilm')) return;
+
+    getMoveGenre()
+        .then(post => {
+            const genre = post.genres.map((x) => x.name);
+            console.log(genre);
+
         })
-        .catch(err => console.log(err));
+        .catch(err => console.log(err)); //при ошибке сообщаение в консоль
 
-    createPagination ();
+
+
+    page.html  = `
+    <div class="container_come-in">
+        <div class="formWrapper">
+            <h2>Add new film</h2>
+            <form action="#"
+                  method="get"
+                  name="newFilm"
+            >
+                <div>
+                                        <div>
+                                          <input type="text"
+                                                 id="addTitle"
+                                                 placeholder="title"
+                                                 minlength="3"
+                                                 required
+                                                 autofocus
+                                                 class="DisainPlaceholder form_Style"
+                                           >
+                                        </div>
+                                        
+                                        <div>
+                                          <textarea 
+                                                 id="addOverview"
+                                                 placeholder="Overview"
+                                                 minlength="6"
+                                                 maxlength="150"
+                                                 required
+                                                 class="DisainPlaceholder form_Style"
+                                          ></textarea>
+                                        </div>
+                                        
+                                        <div>
+                                          <input type="number"
+                                                 id="addPopularity"
+                                                 placeholder="Popularity"
+                                                 required
+                                                 class="DisainPlaceholder form_Style"
+                                          >
+                                        </div>
+                                         
+                                        <div>
+                                          <input type="date"
+                                                 id="addRelease_date"
+                                                 placeholder="release date"
+                                                 required
+                                                 class="DisainPlaceholder form_Style"
+                                          >
+                                        </div> 
+                                         
+                                        <select
+                                            id="addGenres"
+                                        >
+                                       
+                                            <option></option>
+                                        </select>
+                                        
+                                         <div>
+                                          <input type="number"
+                                                id="addVote_average"
+                                                placeholder="Vote average"
+                                                required
+                                                class="DisainPlaceholder form_Style"
+                                                >
+                                         </div>  
+                                          
+                                         <div>
+                                          <input type="number"
+                                                id="addVote_count "
+                                                placeholder="Vote count"
+                                                required
+                                                class="DisainPlaceholder form_Style"
+                                                >
+                                         </div>     
+                </div>
+                <div class="control_btn">
+                    <button type="submit"
+                            id="addNewFilm"
+                            class="addFilm-admin ">
+                        Add
+                    </button>
+                    <button  type="reset"
+                             class="clear-newFilm"
+                             id="clearNew film"
+                    >
+                           Clear
+                    </button>
+                </div>
+            </form>
+                      
+        </div>
+    </div>
+    `;
+    while (containerAll.firstChild) {
+        containerAll.removeChild(containerAll.firstChild);
+    }
+    containerAll.innerHTML = page.html;
+});
+//удаление фильма на страницe его описания
+containerAll.addEventListener('click', () => {
+   let target = event.target;
+   if (!target.classList.contains('deleteFilm_about')) return ;
+   let title = containerAll.querySelector('.about_title').innerHTML.slice(1);
+
+   for (let i = 0; i < currentBasa.length; i++){
+        if (title === currentBasa[i].title){
+            idDeleteFilm.push(currentBasa[i].id);
+            currentBasa.splice(i,1);
+            break
+        }
+   }
+
+   createHomePage()
 });
 
 //при в нажатие на авторизацию
@@ -102,7 +242,6 @@ containerAll.addEventListener('click', () =>{
     } else {
         if (email.value === 'admin@gmail.com') {
         adminMode = true;
-        console.log(adminMode);
         }
         //отображает юзера при входе
         autorizationUser(user_head,activUser );
@@ -210,7 +349,6 @@ containerAll.addEventListener('click', () =>{
     }
     containerAll.innerHTML = page.html;
 });
-
 //проверка введенной формы регистрации
 containerAll.addEventListener('click', () => {
     let target = event.target;
@@ -253,7 +391,7 @@ containerAll.addEventListener('click', () => {
     }
 });
 
-//отрисовка главной страницы
+//отрисовка структуры главной страницы
 function mainPage () {
     if (adminMode){
         page.html = `
@@ -280,6 +418,7 @@ function mainPage () {
                 <option value="release_date.desc">Дата выхода (убывание)</option>
                 <option value="release_date.asc">Дата выхода (возростание)</option>
             </select>
+            <a class="addFilm floating-button">+</a><div 
             <div id="containerListMovie" class="listMovie"></div>
             <div id="container_pagination" class="pag_contain"></div>
         </article>
@@ -293,11 +432,6 @@ function autorizationUser (block, userInSystem) {
     block.innerHTML = userInSystem[0].user;
     block.classList.add('visable');
     document.querySelector('.double-border-button').innerHTML = 'Sign Up';
-   /* for (let i = 0; i < users.length; i++) {
-        if (users[i].user === userInSystem[0].user) {
-            users[i].authorized = true
-        }
-    }*/
 }
 
 //Получение базы фильмов по запросу
@@ -314,8 +448,18 @@ function createGetMovie(basafilms) {
 
     const fragment = document.createDocumentFragment();
 
-    for(let i=0; i < basafilms.results.length; i++) {
+    for (let i=0; i < basafilms.results.length; i++) {
 
+        //проверяем полученные фильмы на совпадениея с удалёнными до запроса
+        let coincidence = false;
+        for (let j = 0; j < idDeleteFilm.length; j++ ) {
+            if (basafilms.results[i].id === idDeleteFilm[j]) {
+                coincidence = true;
+                break
+            }
+        }
+        //если происходит совпадение id пропускаем и не отрисовываем полученный фильм
+         if (coincidence) continue;
 
         let a = document.createElement('a');
         a.classList.add('item_movie');
@@ -356,10 +500,9 @@ function createGetMovie(basafilms) {
         fragment.appendChild(a)
     }
     document.getElementById('containerListMovie').appendChild(fragment);
-    console.log(adminMode)
 }
 
-//При клике на кнопку входа
+//При клике на кнопку входа в  систему
 comeIn.addEventListener('click', () => {
     let user_head = document.querySelector('.user_head');
     if (user_head.innerHTML !== ''){
@@ -367,7 +510,6 @@ comeIn.addEventListener('click', () => {
         user_head.innerHTML = '';
         document.querySelector('.double-border-button').innerHTML = 'Sign In / Sign Up';
         adminMode = false;
-         console.log('ыход');
 
         //создаём главную страницу
         mainPage ();
@@ -523,7 +665,29 @@ function removeChild(elem) {
     }
   }
 
+  //переход на главную страницу
+function createHomePage() {
+    if (document.getElementById('containerAboutFilm') != null) {
+        document.getElementById('containerAboutFilm').remove();
+    }
 
+    mainPage ();
+    getMovis(1, selectTypeSort(document.getElementById('sortForm')))
+        .then(post =>  {
+            createGetMovie(post);
+        })
+        .catch(err => console.log(err));
+
+    createPagination ();
+}
+
+//Получить список жанров
+function getMoveGenre () {
+    return Promise.resolve().then(() => {
+        return fetch (` https://api.themoviedb.org/3/genre/movie/list?api_key=dcc9acdebadcf222b7588db1d80573d0&language=ru`).then(
+            response => response.json())
+    })
+}
 /* Demo JS */
 import './aboutFilm'
 import './mouseEvent';
