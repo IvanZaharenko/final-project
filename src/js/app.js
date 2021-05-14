@@ -17,6 +17,7 @@ const comeIn = document.querySelector('.double-border-button');
 
 
 let activPage = 1;
+let genre;
 
 //добавление структуры главной страницы
 mainPage ();
@@ -25,12 +26,18 @@ mainPage ();
 document.addEventListener ('DOMContentLoaded', function () {
     let currentBasa = [];
     let basaGenre = [];
-
+    getMoveGenre()
+        .then(post => {
+            genre = post.genres;
+        })
+        .catch(err => console.log(err)); //при ошибке сообщаение в консоль
 
     //отправляется запрос за порцией фильмов
     getMovis(1, selectTypeSort(document.getElementById('sortForm')))
-        .then(post =>  { //при получении создаём страницу
-            createGetMovie(post);
+        .then(post =>  {
+            window.currentBasa = post.results.slice();
+            //при получении создаём страницу
+            createGetMovie();
         })
         .catch(err => console.log(err)); //при ошибке сообщаение в консоль
         createPagination ();  // создание пагинации
@@ -48,7 +55,10 @@ document.addEventListener ('DOMContentLoaded', function () {
             removeChild( document.getElementById('containerListMovie'));
 
             getMovis(Number(target.innerHTML), selectTypeSort(document.getElementById('sortForm')))
-                .then(post =>  createGetMovie(post))
+                .then(post => {
+                    window.currentBasa = post.results.slice();
+                    createGetMovie(currentBasa)
+                })
                 .catch(err => console.log(err));
         }// кликнули по стрелкам право/лево
         if (target.classList.contains('page-prev')|| target.classList.contains('page-next') ) {
@@ -67,7 +77,10 @@ document.addEventListener ('DOMContentLoaded', function () {
 
             //получение новой порции с сортировкой по выбору
             getMovis(activPage, selectTypeSort(document.getElementById('sortForm')) )
-                .then(post =>  createGetMovie(post))
+                .then(post =>  {
+                    window.currentBasa = post.results.slice();
+                    createGetMovie(currentBasa)
+                })
                 .catch(err => console.log(err));
         }
     });
@@ -94,23 +107,13 @@ containerAll.addEventListener('click', () => {
          }
      }
 });
-//добавление нового фильма
+
+// Создание формы заполнения для нового фильма, по нажатию на +
 containerAll.addEventListener('click', function () {
-    let target = event.target;
+   let target = event.target;
    if (!target.classList.contains('addFilm')) return;
 
-    getMoveGenre()
-        .then(post => {
-            const genre = post.genres.map((x) => x.name);
-            console.log(genre);
-
-        })
-        .catch(err => console.log(err)); //при ошибке сообщаение в консоль
-
-
-
-    page.html  = `
-    <div class="container_come-in">
+   page.html  = `<div class="container_come-in">
         <div class="formWrapper">
             <h2>Add new film</h2>
             <form action="#"
@@ -118,70 +121,59 @@ containerAll.addEventListener('click', function () {
                   name="newFilm"
             >
                 <div>
-                                        <div>
-                                          <input type="text"
-                                                 id="addTitle"
-                                                 placeholder="title"
-                                                 minlength="3"
-                                                 required
-                                                 autofocus
-                                                 class="DisainPlaceholder form_Style"
-                                           >
-                                        </div>
-                                        
-                                        <div>
-                                          <textarea 
-                                                 id="addOverview"
-                                                 placeholder="Overview"
-                                                 minlength="6"
-                                                 maxlength="150"
-                                                 required
-                                                 class="DisainPlaceholder form_Style"
-                                          ></textarea>
-                                        </div>
-                                        
-                                        <div>
-                                          <input type="number"
-                                                 id="addPopularity"
-                                                 placeholder="Popularity"
-                                                 required
-                                                 class="DisainPlaceholder form_Style"
-                                          >
-                                        </div>
+                  
+                    <input type="text"
+                           id="addTitle"
+                           placeholder="title"
+                           minlength="3"
+                           required
+                           autofocus
+                           class="DisainPlaceholder form_Style"
+                    >
+                                                        
+                    <textarea 
+                      id="addOverview"
+                      placeholder="Overview"
+                      minlength="6"
+                      maxlength="150"
+                      required
+                      class="DisainPlaceholder form_Style"
+                     ></textarea>
+                                                       
+                    <input type="number"
+                           id="addPopularity"
+                           placeholder="Popularity"
+                           required
+                           class="DisainPlaceholder form_Style"
+                    >
                                          
-                                        <div>
-                                          <input type="date"
-                                                 id="addRelease_date"
-                                                 placeholder="release date"
-                                                 required
-                                                 class="DisainPlaceholder form_Style"
-                                          >
-                                        </div> 
-                                         
-                                        <select
-                                            id="addGenres"
-                                        >
-                                       
-                                            <option></option>
-                                        </select>
-                                        
-                                         <div>
-                                          <input type="number"
-                                                id="addVote_average"
-                                                placeholder="Vote average"
-                                                required
-                                                class="DisainPlaceholder form_Style"
-                                                >
-                                         </div>  
+                    <input type="date"
+                           id="addRelease_date"
+                           placeholder="release date"
+                           required
+                           class="DisainPlaceholder form_Style"
+                    >
+                    
+<select id="addGenres" multiple size="1" required>`;
+
+   for (let i = 0; i < genre.length; i++){
+       page.html  +=`<option value="${genre[i].id}">${genre[i].name}</option>`;
+   }
+   page.html  += `  </select>
+                     <input type="number"
+                            id="addVote_average"
+                            placeholder="Vote average"
+                            required        
+                            max="10"
+                            class="DisainPlaceholder form_Style"
+                     >
                                           
-                                         <div>
-                                          <input type="number"
-                                                id="addVote_count "
-                                                placeholder="Vote count"
-                                                required
-                                                class="DisainPlaceholder form_Style"
-                                                >
-                                         </div>     
+                    <input type="number"
+                           id="addVote_count "
+                           placeholder="Vote count"
+                           required
+                           class="DisainPlaceholder form_Style"
+                    >
                 </div>
                 <div class="control_btn">
                     <button type="submit"
@@ -196,16 +188,56 @@ containerAll.addEventListener('click', function () {
                            Clear
                     </button>
                 </div>
-            </form>
-                      
+            </form>           
         </div>
-    </div>
-    `;
+    </div>`;
+
     while (containerAll.firstChild) {
         containerAll.removeChild(containerAll.firstChild);
     }
     containerAll.innerHTML = page.html;
 });
+
+//бработка  данных и добавление нового фильма
+containerAll.addEventListener('click', () => {
+    let target = event.target;
+    if (!target.classList.contains('addFilm-admin')) return;
+
+    const infoNewFilm = {title:'', overview:'', popularity: 0, release_date:'', vote_average: 0, vote_count:0, genre_ids:[]};
+    const form = document.forms.newFilm;
+
+    if (form[0].value === '' || form[0].value.length < 3 || form[1].value === '' || form[1].value.length < 6
+        || form[2].value === '' || form[3].value === '' || form[5].value === '' || Number(form[5].value) > 10 || form[6].value === ''  ) {
+        alert ('Заполните пустые поля');
+    } else {
+        event.preventDefault();
+        alert('Фильм и информация о нём добавлены');
+        infoNewFilm.title = form[0].value;
+        form[0].value = '';
+
+        infoNewFilm.overview = form[1].value;
+        form[1].value = '';
+
+        infoNewFilm.popularity = Number(form[2].value);
+        form[2].value = '';
+
+        infoNewFilm.release_date = form[3].value;
+        form[3].value = '';
+
+        infoNewFilm.vote_average = Number(form[5].value);
+        form[5].value = '';
+
+        infoNewFilm.vote_count = Number(form[6].value);
+        form[6].value = '';
+
+        infoNewFilm.genre_ids =  [...form[4].options].filter(option => option.selected).map(option => option.value);
+        form[4].value = '';
+
+        newFilm.push(infoNewFilm);
+        console.log(newFilm)
+    }
+});
+
 //удаление фильма на страницe его описания
 containerAll.addEventListener('click', () => {
    let target = event.target;
@@ -219,7 +251,6 @@ containerAll.addEventListener('click', () => {
             break
         }
    }
-
    createHomePage()
 });
 
@@ -250,7 +281,8 @@ containerAll.addEventListener('click', () =>{
         mainPage ();
         getMovis(1, selectTypeSort(document.getElementById('sortForm')))
             .then(post =>  {
-                createGetMovie(post);
+                window.currentBasa = post.results.slice();
+                createGetMovie();
             })
             .catch(err => console.log(err));
         createPagination ();
@@ -349,12 +381,12 @@ containerAll.addEventListener('click', () =>{
     }
     containerAll.innerHTML = page.html;
 });
+
 //проверка введенной формы регистрации
 containerAll.addEventListener('click', () => {
     let target = event.target;
-    if(!target.classList.contains('upRegistrtion')) {
-        return
-    }
+    if(!target.classList.contains('upRegistrtion'))   return;
+
     let registrationName = document.getElementById('registrationName');
     let registrationSurname = document.getElementById('registrationSurname');
     let registrationPassword = document.getElementById('registrationPassword');
@@ -383,7 +415,9 @@ containerAll.addEventListener('click', () => {
             mainPage ();
             getMovis(1, selectTypeSort(document.getElementById('sortForm')))
                 .then(post =>  {
-                    createGetMovie(post);
+                    window.currentBasa = post.results.slice();
+
+                    createGetMovie(currentBasa);
                 })
                 .catch(err => console.log(err));
             createPagination ();
@@ -418,7 +452,6 @@ function mainPage () {
                 <option value="release_date.desc">Дата выхода (убывание)</option>
                 <option value="release_date.asc">Дата выхода (возростание)</option>
             </select>
-            <a class="addFilm floating-button">+</a><div 
             <div id="containerListMovie" class="listMovie"></div>
             <div id="container_pagination" class="pag_contain"></div>
         </article>
@@ -443,61 +476,72 @@ function getMovis (page, sortType) {
 }
 
 //Создание полученных фильмов
-function createGetMovie(basafilms) {
-    window.currentBasa = basafilms.results.slice();
+function createGetMovie() {
 
     const fragment = document.createDocumentFragment();
 
-    for (let i=0; i < basafilms.results.length; i++) {
+    for (let i=0; i < currentBasa.length; i++) {
 
         //проверяем полученные фильмы на совпадениея с удалёнными до запроса
         let coincidence = false;
         for (let j = 0; j < idDeleteFilm.length; j++ ) {
-            if (basafilms.results[i].id === idDeleteFilm[j]) {
+            if (currentBasa[i].id === idDeleteFilm[j]) {
                 coincidence = true;
                 break
             }
         }
         //если происходит совпадение id пропускаем и не отрисовываем полученный фильм
-         if (coincidence) continue;
+         if (coincidence) {
+             continue;
+         }
+            else {
+             let nodePage = document.getElementById('container_pagination').querySelectorAll('a');
+             searchActivPage (nodePage);
 
-        let a = document.createElement('a');
-        a.classList.add('item_movie');
-        let div = document.createElement('div');
+             if (newFilm.length !== 0 && activPage === 1) {
+                 console.log('создавание по новому условию');
+             }
 
-        let img = document.createElement('img');
-            if (basafilms.results[i].poster_path === null ) {
-                img.src = `http://placehold.it/200x319`;
-            } else {
-                img.src = `https://image.tmdb.org/t/p/w500${basafilms.results[i].poster_path}`;
-            }
-        img.alt = 'Постер фильма';
+             let a = document.createElement('a');
+             a.classList.add('item_movie');
+             let div = document.createElement('div');
 
-        let p_title = document.createElement('p');
-        p_title.classList.add('title_item');
-        p_title.innerHTML = basafilms.results[i].title;
+             let img = document.createElement('img');
+             if (currentBasa[i].poster_path === null ) {
+                 img.src = `http://placehold.it/200x319`;
+             } else {
+                 img.src = `https://image.tmdb.org/t/p/w500${currentBasa[i].poster_path}`;
+             }
+             img.alt = 'Постер фильма';
 
-        let p_vote = document.createElement('p');
-        p_vote.classList.add('vote_item');
-        p_vote.innerHTML = basafilms.results[i].vote_average;
+             let p_title = document.createElement('p');
+             p_title.classList.add('title_item');
+             p_title.innerHTML = currentBasa[i].title;
 
-        let p_release = document.createElement('p');
-        p_release.classList.add('release_item');
-        p_release.innerHTML = transformGetData(basafilms.results[i].release_date) ;
+             let p_vote = document.createElement('p');
+             p_vote.classList.add('vote_item');
+             p_vote.innerHTML = currentBasa[i].vote_average;
 
-        div.appendChild(img);
-        div.appendChild(p_title);
-        div.appendChild(p_vote);
-        div.appendChild(p_release);
-        a.appendChild(div);
+             let p_release = document.createElement('p');
+             p_release.classList.add('release_item');
+             p_release.innerHTML = transformGetData(currentBasa[i].release_date) ;
 
-        if (adminMode){
-            let deleteFilm = document.createElement('a');
-            deleteFilm.innerHTML = '☒';
-            deleteFilm.classList.add('deleteFilm');
-            a.appendChild(deleteFilm);
-        }
-        fragment.appendChild(a)
+             div.appendChild(img);
+             div.appendChild(p_title);
+             div.appendChild(p_vote);
+             div.appendChild(p_release);
+             a.appendChild(div);
+
+             if (adminMode){
+                 let deleteFilm = document.createElement('a');
+                 deleteFilm.innerHTML = '☒';
+                 deleteFilm.classList.add('deleteFilm');
+                 a.appendChild(deleteFilm);
+             }
+             fragment.appendChild(a)
+         }
+
+
     }
     document.getElementById('containerListMovie').appendChild(fragment);
 }
@@ -515,7 +559,8 @@ comeIn.addEventListener('click', () => {
         mainPage ();
         getMovis(1, selectTypeSort(document.getElementById('sortForm')))
             .then(post =>  {
-                createGetMovie(post);
+                window.currentBasa = post.results.slice();
+                createGetMovie(currentBasa);
             })
             .catch(err => console.log(err));
         createPagination ();
@@ -626,7 +671,10 @@ function rulePrevNext(context, allPage){
             removeChild( document.getElementById('containerListMovie'));
 
             getMovis(activPage, selectTypeSort(document.getElementById('sortForm')))
-                .then(post =>  createGetMovie(post))
+                .then(post =>  {
+                    window.currentBasa = post.results.slice();
+                    createGetMovie(currentBasa)
+                })
                 .catch(err => console.log(err));
         }
     } else {
@@ -637,7 +685,10 @@ function rulePrevNext(context, allPage){
             removeChild( document.getElementById('containerListMovie'));
 
             getMovis(activPage, selectTypeSort(document.getElementById('sortForm')))
-                .then(post =>  createGetMovie(post))
+                .then(post =>  {
+                    window.currentBasa = post.results.slice();
+                    createGetMovie(currentBasa)
+                })
                 .catch(err => console.log(err));
         }
     }
@@ -656,7 +707,7 @@ function searchActivPage (pages) {
 }
 
 //Преобразование даты
-const transformGetData = (getData) => getData.split('-').reverse().join('/');
+const transformGetData = (getData) => getData.split('-').reverse().join('.');
 
 //функция удаления детей элемента
 function removeChild(elem) {
@@ -674,7 +725,8 @@ function createHomePage() {
     mainPage ();
     getMovis(1, selectTypeSort(document.getElementById('sortForm')))
         .then(post =>  {
-            createGetMovie(post);
+            window.currentBasa = post.results.slice();
+            createGetMovie();
         })
         .catch(err => console.log(err));
 
@@ -688,6 +740,7 @@ function getMoveGenre () {
             response => response.json())
     })
 }
+
 /* Demo JS */
 import './aboutFilm'
 import './mouseEvent';
