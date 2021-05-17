@@ -2,22 +2,35 @@ import '../scss/app.scss';
 
 /* Your JS Code goes here */
 window.users = [
-    {user: 'Admin', userLastName:'', password: '1', email: 'admin@gmail.com', authorized: false},
-    {user: 'Ivan',userLastName:'', password: '2', email: 'IV@gmail.com',  authorized: false},
+    {user: 'Admin', userLastName:'', password: '1', email: 'admin@gmail.com'},
+    {user: 'Ivan',userLastName:'', password: '2', email: 'IV@gmail.com'},
 ];
 window.page = { html: "" };
 window.adminMode = false;
-window.idDeleteFilm = [];
-window.newFilm = [];
+window.deleteFilm = [];
+window.basaGenre = [];
+window.newFilm = [
+                    {
+                    id:0,
+                    title:'yghfjgf',
+                    tagline: '',
+                    overview:'',
+                    popularity: 0,
+                    release_date:'',
+                    vote_average: 0,
+                    vote_count:0,
+                    genres:[
+                        {id:12},
+                        {id:18}
+                    ]
+                    }
+                ];
+let activPage = 1;
 
 const containerAll = document.getElementById('containerAll');
 const user_head = document.querySelector('.user_head');
 const logo = document.querySelector('.logo');
 const comeIn = document.querySelector('.double-border-button');
-
-
-let activPage = 1;
-let genre;
 
 //добавление структуры главной страницы
 mainPage ();
@@ -25,29 +38,36 @@ mainPage ();
 //При прогрузке страницы
 document.addEventListener ('DOMContentLoaded', function () {
     let currentBasa = [];
-    let basaGenre = [];
+    //получаем базу жанров
     getMoveGenre()
         .then(post => {
-            genre = post.genres;
+            basaGenre = post.genres;
         })
-        .catch(err => console.log(err)); //при ошибке сообщаение в консоль
+        .catch(err => {//при ошибке сообщаение в консоль
+            console.log(err);
+            createPage404 ()
+        });
 
     //отправляется запрос за порцией фильмов
     getMovis(1, selectTypeSort(document.getElementById('sortForm')))
         .then(post =>  {
+            document.querySelector('.preloader-5').classList.remove('display-block');
             window.currentBasa = post.results.slice();
             //при получении создаём страницу
             createGetMovie();
         })
-        .catch(err => console.log(err)); //при ошибке сообщаение в консоль
+        .catch(err => {
+            createPage404 ();
+            console.log(err)
+        }); //при ошибке сообщаение в консоль
         createPagination ();  // создание пагинации
-    //
 
     containerAll.addEventListener('click', (event) =>{
         let target = event.target;
-
         //кликнули по разным страницам
         if (target.classList.contains('work_pag') ) {
+            document.querySelector('.preloader-5').classList.add('display-block');
+
             let nodePage = document.getElementById('container_pagination').querySelectorAll('a');
             searchActivPage (nodePage);
             nodePage[activPage].classList.remove('activ_page');
@@ -56,10 +76,14 @@ document.addEventListener ('DOMContentLoaded', function () {
 
             getMovis(Number(target.innerHTML), selectTypeSort(document.getElementById('sortForm')))
                 .then(post => {
+                    document.querySelector('.preloader-5').classList.remove('display-block');
                     window.currentBasa = post.results.slice();
                     createGetMovie(currentBasa)
                 })
-                .catch(err => console.log(err));
+                .catch(err => {
+                    createPage404 ();
+                    console.log(err)
+                });
         }// кликнули по стрелкам право/лево
         if (target.classList.contains('page-prev')|| target.classList.contains('page-next') ) {
             let nodePage = document.getElementById('container_pagination').querySelectorAll('a');
@@ -71,20 +95,24 @@ document.addEventListener ('DOMContentLoaded', function () {
     containerAll.addEventListener('change', () => {
         let target = event.target;
         if (target.classList.contains('sel_main')) {
+            document.querySelector('.preloader-5').classList.add('display-block');
+
             let nodePage = document.getElementById('container_pagination').querySelectorAll('a');
             removeChild( document.getElementById('containerListMovie'));
             searchActivPage (nodePage);
-
             //получение новой порции с сортировкой по выбору
             getMovis(activPage, selectTypeSort(document.getElementById('sortForm')) )
                 .then(post =>  {
+                    document.querySelector('.preloader-5').classList.remove('display-block');
                     window.currentBasa = post.results.slice();
                     createGetMovie(currentBasa)
                 })
-                .catch(err => console.log(err));
+                .catch(err => {
+                    createPage404 ();
+                    console.log(err)
+                });
         }
     });
-
 });
 
 //переход на главнуб страницу при клике на лого
@@ -98,10 +126,9 @@ containerAll.addEventListener('click', () => {
     let item = target.closest('.item_movie');
     let title = item.querySelector('.title_item').innerHTML;
     item.remove();
-
      for (let i = 0; i < currentBasa.length; i++){
          if (title === currentBasa[i].title){
-            idDeleteFilm.push(currentBasa[i].id);
+            deleteFilm.push(currentBasa[i].title);
             currentBasa.splice(i,1);
              break
          }
@@ -121,7 +148,6 @@ containerAll.addEventListener('click', function () {
                   name="newFilm"
             >
                 <div>
-                  
                     <input type="text"
                            id="addTitle"
                            placeholder="title"
@@ -129,8 +155,7 @@ containerAll.addEventListener('click', function () {
                            required
                            autofocus
                            class="DisainPlaceholder form_Style"
-                    >
-                                                        
+                    >                                
                     <textarea 
                       id="addOverview"
                       placeholder="Overview"
@@ -138,26 +163,22 @@ containerAll.addEventListener('click', function () {
                       maxlength="150"
                       required
                       class="DisainPlaceholder form_Style"
-                     ></textarea>
-                                                       
+                     ></textarea>                              
                     <input type="number"
                            id="addPopularity"
                            placeholder="Popularity"
                            required
                            class="DisainPlaceholder form_Style"
-                    >
-                                         
+                    >                     
                     <input type="date"
                            id="addRelease_date"
                            placeholder="release date"
                            required
                            class="DisainPlaceholder form_Style"
                     >
-                    
 <select id="addGenres" multiple size="1" required>`;
-
-   for (let i = 0; i < genre.length; i++){
-       page.html  +=`<option value="${genre[i].id}">${genre[i].name}</option>`;
+   for (let i = 0; i < basaGenre.length; i++){
+       page.html  +=`<option value="${basaGenre[i].id}">${basaGenre[i].name}</option>`;
    }
    page.html  += `  </select>
                      <input type="number"
@@ -166,8 +187,7 @@ containerAll.addEventListener('click', function () {
                             required        
                             max="10"
                             class="DisainPlaceholder form_Style"
-                     >
-                                          
+                     >                 
                     <input type="number"
                            id="addVote_count "
                            placeholder="Vote count"
@@ -198,12 +218,21 @@ containerAll.addEventListener('click', function () {
     containerAll.innerHTML = page.html;
 });
 
-//бработка  данных и добавление нового фильма
+//обработка  данных и добавление нового фильма
 containerAll.addEventListener('click', () => {
     let target = event.target;
     if (!target.classList.contains('addFilm-admin')) return;
 
-    const infoNewFilm = {title:'', overview:'', popularity: 0, release_date:'', vote_average: 0, vote_count:0, genre_ids:[]};
+    const infoNewFilm = { id:0,
+                          title:'',
+                          overview:'',
+                          tagline: '',
+                          popularity: 0,
+                          release_date:'',
+                          vote_average: 0,
+                          vote_count:0,
+                          genres:[]
+                        };
     const form = document.forms.newFilm;
 
     if (form[0].value === '' || form[0].value.length < 3 || form[1].value === '' || form[1].value.length < 6
@@ -230,11 +259,15 @@ containerAll.addEventListener('click', () => {
         infoNewFilm.vote_count = Number(form[6].value);
         form[6].value = '';
 
-        infoNewFilm.genre_ids =  [...form[4].options].filter(option => option.selected).map(option => option.value);
-        form[4].value = '';
+        let arrayGenres =  [...form[4].options].filter(option => option.selected).map(option => option.value);
+        let x = [];
+        for(let i =0 ; i < arrayGenres.length; i++) {
+             x.push({ id: Number(arrayGenres[i]) });
+        }
+        infoNewFilm.genres =  x;
 
+        form[4].value = '';
         newFilm.push(infoNewFilm);
-        console.log(newFilm)
     }
 });
 
@@ -242,11 +275,11 @@ containerAll.addEventListener('click', () => {
 containerAll.addEventListener('click', () => {
    let target = event.target;
    if (!target.classList.contains('deleteFilm_about')) return ;
-   let title = containerAll.querySelector('.about_title').innerHTML.slice(1);
 
+   let title = containerAll.querySelector('.about_title').innerHTML.slice(1);
    for (let i = 0; i < currentBasa.length; i++){
         if (title === currentBasa[i].title){
-            idDeleteFilm.push(currentBasa[i].id);
+            deleteFilm.push(currentBasa[i].title);
             currentBasa.splice(i,1);
             break
         }
@@ -260,23 +293,19 @@ containerAll.addEventListener('click', () =>{
     if (!target.classList.contains('upComeIn')){
         return
     }
-
     let email = document.getElementById('comeInEmailForm');
     let password = document.getElementById('comeInPhoneForm');
-
     const activUser = users.filter( user => user.email === email.value && user.password === password.value);
-
     if (activUser.length === 0) {
         email.value = '';
         password.value ='';
         alert('Неправильный электронный адрес, или пароль');
     } else {
         if (email.value === 'admin@gmail.com') {
-        adminMode = true;
+        window.adminMode = true;
         }
         //отображает юзера при входе
         autorizationUser(user_head,activUser );
-
         //создаём главную страницу
         mainPage ();
         getMovis(1, selectTypeSort(document.getElementById('sortForm')))
@@ -284,11 +313,13 @@ containerAll.addEventListener('click', () =>{
                 window.currentBasa = post.results.slice();
                 createGetMovie();
             })
-            .catch(err => console.log(err));
+            .catch(err => {
+                createPage404 ();
+                console.log(err)
+            });
         createPagination ();
     }
 });
-
 //при нажатии на регистрацию
 containerAll.addEventListener('click', () =>{
     let target = event.target;
@@ -397,29 +428,33 @@ containerAll.addEventListener('click', () => {
     //по нажатию на регистрацию проверяет заполнение формы
     if (registrationName.value === '' || registrationSurname.value === '' || registrationPassword.value === '' || registrationConfirm.value === '' || registrationEmail.value === '' ) {
         alert('Заполните пустые поля ');
+        return
     } else {
         if (registrationPassword.value !== registrationConfirm.value) {
         alert('Пароли не совпадают');
+        return
         } else {
             newUsers.user = registrationName.value;
             newUsers.userLastName = registrationSurname.value;
             newUsers.password = registrationPassword.value;
             newUsers.email = registrationEmail.value;
             users.push(newUsers);
+
             //отображает юзера при входе
             user_head.innerHTML = registrationName.value;
             user_head.classList.add('visable');
             document.querySelector('.double-border-button').innerHTML = 'Sign Up';
-
             //создаём главную страницу
             mainPage ();
             getMovis(1, selectTypeSort(document.getElementById('sortForm')))
                 .then(post =>  {
                     window.currentBasa = post.results.slice();
-
                     createGetMovie(currentBasa);
                 })
-                .catch(err => console.log(err));
+                .catch(err => {
+                    createPage404 ();
+                    console.log(err)
+                });
             createPagination ();
         }
     }
@@ -458,7 +493,6 @@ function mainPage () {
     `;
     containerAll.innerHTML = page.html;
     }
-
 }
 
 function autorizationUser (block, userInSystem) {
@@ -477,15 +511,22 @@ function getMovis (page, sortType) {
 
 //Создание полученных фильмов
 function createGetMovie() {
+    let nodePage = document.getElementById('container_pagination').querySelectorAll('a');
+    searchActivPage (nodePage);
 
+    if (newFilm.length !== 0 && activPage === 1 && selectTypeSort(document.getElementById('sortForm')) === 'vote_count.desc') {
+       currentBasa.splice(-newFilm.length);
+
+       for (let k = 0; k < newFilm.length; k++){
+       currentBasa.unshift(newFilm[k])
+      }
+    }
     const fragment = document.createDocumentFragment();
-
     for (let i=0; i < currentBasa.length; i++) {
-
         //проверяем полученные фильмы на совпадениея с удалёнными до запроса
         let coincidence = false;
-        for (let j = 0; j < idDeleteFilm.length; j++ ) {
-            if (currentBasa[i].id === idDeleteFilm[j]) {
+        for (let j = 0; j < deleteFilm.length; j++ ) {
+            if (currentBasa[i].title === deleteFilm[j]) {
                 coincidence = true;
                 break
             }
@@ -494,20 +535,12 @@ function createGetMovie() {
          if (coincidence) {
              continue;
          }
-            else {
-             let nodePage = document.getElementById('container_pagination').querySelectorAll('a');
-             searchActivPage (nodePage);
-
-             if (newFilm.length !== 0 && activPage === 1) {
-                 console.log('создавание по новому условию');
-             }
-
              let a = document.createElement('a');
              a.classList.add('item_movie');
              let div = document.createElement('div');
 
              let img = document.createElement('img');
-             if (currentBasa[i].poster_path === null ) {
+             if (currentBasa[i].poster_path === null || currentBasa[i].poster_path === undefined) {
                  img.src = `http://placehold.it/200x319`;
              } else {
                  img.src = `https://image.tmdb.org/t/p/w500${currentBasa[i].poster_path}`;
@@ -539,8 +572,6 @@ function createGetMovie() {
                  a.appendChild(deleteFilm);
              }
              fragment.appendChild(a)
-         }
-
 
     }
     document.getElementById('containerListMovie').appendChild(fragment);
@@ -554,7 +585,6 @@ comeIn.addEventListener('click', () => {
         user_head.innerHTML = '';
         document.querySelector('.double-border-button').innerHTML = 'Sign In / Sign Up';
         adminMode = false;
-
         //создаём главную страницу
         mainPage ();
         getMovis(1, selectTypeSort(document.getElementById('sortForm')))
@@ -562,9 +592,11 @@ comeIn.addEventListener('click', () => {
                 window.currentBasa = post.results.slice();
                 createGetMovie(currentBasa);
             })
-            .catch(err => console.log(err));
+            .catch(err => {
+                createPage404 ();
+                console.log(err)
+            });
         createPagination ();
-
     } else comeInPage()
 });
 
@@ -662,6 +694,8 @@ function createPagination () {
 
 //стрелки вправо и влево
 function rulePrevNext(context, allPage){
+    document.querySelector('.preloader-5').classList.add('display-block')
+
     searchActivPage (allPage);
     if (context.classList.contains('page-prev')){
         if(activPage !== 1){
@@ -669,13 +703,16 @@ function rulePrevNext(context, allPage){
             activPage--;
             allPage[activPage].classList.add('activ_page');
             removeChild( document.getElementById('containerListMovie'));
-
             getMovis(activPage, selectTypeSort(document.getElementById('sortForm')))
                 .then(post =>  {
+                    document.querySelector('.preloader-5').classList.remove('display-block');
                     window.currentBasa = post.results.slice();
                     createGetMovie(currentBasa)
                 })
-                .catch(err => console.log(err));
+                .catch(err => {
+                    createPage404 ();
+                    console.log(err)
+                });
         }
     } else {
         if(activPage !== 10){
@@ -683,13 +720,16 @@ function rulePrevNext(context, allPage){
             activPage++;
             allPage[activPage].classList.add('activ_page');
             removeChild( document.getElementById('containerListMovie'));
-
             getMovis(activPage, selectTypeSort(document.getElementById('sortForm')))
                 .then(post =>  {
+                    document.querySelector('.preloader-5').classList.remove('display-block');
                     window.currentBasa = post.results.slice();
                     createGetMovie(currentBasa)
                 })
-                .catch(err => console.log(err));
+                .catch(err => {
+                    createPage404 ();
+                    console.log(err)
+                });
         }
     }
 }
@@ -718,18 +758,22 @@ function removeChild(elem) {
 
   //переход на главную страницу
 function createHomePage() {
+    document.querySelector('.preloader-5').classList.add('display-block');
+
     if (document.getElementById('containerAboutFilm') != null) {
         document.getElementById('containerAboutFilm').remove();
     }
-
     mainPage ();
     getMovis(1, selectTypeSort(document.getElementById('sortForm')))
         .then(post =>  {
+            document.querySelector('.preloader-5').classList.remove('display-block');
             window.currentBasa = post.results.slice();
             createGetMovie();
         })
-        .catch(err => console.log(err));
-
+        .catch(err => {
+            createPage404 ();
+            console.log(err)
+        });
     createPagination ();
 }
 
@@ -739,6 +783,22 @@ function getMoveGenre () {
         return fetch (` https://api.themoviedb.org/3/genre/movie/list?api_key=dcc9acdebadcf222b7588db1d80573d0&language=ru`).then(
             response => response.json())
     })
+}
+
+function createPage404 () {
+    page.html = `
+     <div class="wrap">
+		<div class="logoMistake">
+			<h1>404</h1>
+			<p> Sorry - File not Found!</p>
+			<p> Вернитесь на главную страницу и попробуйте еще раз</p>
+		</div>
+	</div>
+    `;
+    while (containerAll.firstChild) {
+        containerAll.removeChild(containerAll.firstChild);
+    }
+    containerAll.innerHTML = page.html;
 }
 
 /* Demo JS */

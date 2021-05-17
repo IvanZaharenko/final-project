@@ -1,32 +1,32 @@
 const containerAll = document.getElementById('containerAll');
 
-
-containerAll.addEventListener('click', (event) =>{
+containerAll.addEventListener('click', (event) => {
     let target = event.target;
-
-    if (target.classList.contains('item_movie')) {
-        getMoveID(searchMoveID(target))
+    if (!target.classList.contains('item_movie')) return;
+    document.querySelector('.preloader-5').classList.add('display-block');
+    window.scrollTo(0,0);
+     if (searchMoveID(target) !== 0) {
+         getMoveID(searchMoveID(target))
             .then(post =>  {
-                aboutFilmPage (post);
+            aboutFilmPage (post);
+            console.log(post)
             })
             .catch(err => console.log(err));
-    }
+        } else {
+            aboutFilmPage(newFilm[searchNewMoveTitle(target)]);
+        }
 });
 
 function aboutFilmPage (postID) {
+    let infoFilm = postID;
     let src = '';
-    let genre = [];
+    document.querySelector('.preloader-5').classList.remove('display-block');
 
-    for (let i = 0; i < postID.genres.length; i++) {
-       let item = postID.genres[i].name;
-       genre.push(' ' + item.charAt(0).toUpperCase() + item.slice(1) );
-    }
-    if (postID.poster_path === null ) {
+    if (infoFilm.poster_path === null || infoFilm.poster_path === undefined) {
         src = `http://placehold.it/200x319`;
     } else {
-        src = `https://image.tmdb.org/t/p/w500${postID.poster_path}`;
+        src = `https://image.tmdb.org/t/p/w500${infoFilm.poster_path}`;
     }
-
     document.getElementById('containerListMovie').remove();
 
     if (adminMode){
@@ -38,12 +38,12 @@ function aboutFilmPage (postID) {
                 <a class="redactFilm">&#9998;</a>
             </div>
             <div id="about-film_info">
-                <h2 class="about_title"> ${postID.title}</h2>
-                <p class="about_miniOverview">${postID.tagline}</p>
-                <p class="about_release">Год выпуска: <span class="white_color"> ${postID.release_date.split('-').reverse().join('/')}</span></p>
-                <p class="about_genres">Жанры:  <span class="white_color">${genre + '.'}</span></p>
-                <p class="about_vote">рейтинг: <span class="white_color">${postID.vote_average}/10</span></p>
-                <p class="about_overview">Описание фильма: <br><br><span class="white_color">${postID.overview}</span></p>
+                <h2 class="about_title"> ${infoFilm.title}</h2>
+                <p class="about_miniOverview">${infoFilm.tagline}</p>
+                <p class="about_release">Год выпуска: <span class="white_color"> ${infoFilm.release_date.split('-').reverse().join('/')}</span></p>
+                <p class="about_genres">Жанры: <span class="white_color">${actualGenre(infoFilm).slice(1,-1)+'.'}</span></p>
+                <p class="about_vote">рейтинг: <span class="white_color">${infoFilm.vote_average}/10</span></p>
+                <p class="about_overview">Описание фильма: <br><br><span class="white_color">${infoFilm.overview}</span></p>
             </div>
         </article>
     `;
@@ -55,22 +55,18 @@ function aboutFilmPage (postID) {
                 <img src="${src}" alt="Постер фильма"/>
             </div>
             <div id="about-film_info">
-                <h2 class="about_title"> ${postID.title}</h2>
-                <p class="about_miniOverview">${postID.tagline}</p>
-                <p class="about_release">Год выпуска: <span class="white_color"> ${postID.release_date.split('-').reverse().join('/')}</span></p>
-                <p class="about_genres">Жанры:  <span class="white_color">${genre + '.'}</span></p>
-                <p class="about_vote">рейтинг: <span class="white_color">${postID.vote_average}/10</span></p>
-                <p class="about_overview">Описание фильма: <br><br><span class="white_color">${postID.overview}</span></p>
+                <h2 class="about_title"> ${infoFilm.title}</h2>
+                <p class="about_miniOverview">${infoFilm.tagline}</p>
+                <p class="about_release">Год выпуска: <span class="white_color"> ${infoFilm.release_date.split('-').reverse().join('/')}</span></p>
+                <p class="about_genres">Жанры:  <span class="white_color">${actualGenre(infoFilm).slice(1,-1)+'.'}</span></p>
+                <p class="about_vote">рейтинг: <span class="white_color">${infoFilm.vote_average}/10</span></p>
+                <p class="about_overview">Описание фильма: <br><br><span class="white_color">${infoFilm.overview}</span></p>
             </div>
         </article>
     `;
     containerAll.innerHTML = page.html;
     }
-
-
-
 }
-
 //Получить фильм по выбранному id
 function getMoveID (id) {
     return Promise.resolve().then(() => {
@@ -89,3 +85,31 @@ const searchMoveID = (context) => {
     }
     return currentBasa[item].id
 };
+
+const searchNewMoveTitle = context => {
+    let item = 0;
+    for(item; item <= newFilm.length; item++) {
+        if (newFilm[item].title === context.closest('.item_movie').querySelector('.title_item').innerHTML ) {
+            break
+        }
+    }
+    return item;
+};
+
+ const actualGenre = basa => {
+    let genresIdFilm = [];
+    let genreFilm = '';
+    for (let j = 0; j < basa.genres.length; j++) {
+        genresIdFilm.push(basa.genres[j].id)
+    }
+    for (let i = 0; i < basaGenre.length; i++) {
+        for(let k = 0; k < genresIdFilm.length; k++ ){
+            if (basaGenre[i].id === genresIdFilm[k]) {
+                let item = basaGenre[i].name;
+                genreFilm += ' ' + item.charAt(0).toUpperCase() + item.slice(1) + ',';
+                continue
+                }
+        }
+    }
+    return genreFilm
+ };
