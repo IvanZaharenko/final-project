@@ -1,10 +1,13 @@
 [
   {
-    "User": "Admin",
-    "password": "1"
-  },
+    "user":"Admin",
+    "userLastName":"",
+    "password":"1",
+    "email":"admin@gmail.com"},
   {
-    "User": "Ivan",
-    "password": "2"
+    "user":"Ivan",
+    "userLastName":"",
+    "password":"2",
+    "email":"IV@gmail.com"
   }
 ]

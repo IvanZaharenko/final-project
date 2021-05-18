@@ -23,7 +23,7 @@ mainPage ();
 
 //При прогрузке страницы
 document.addEventListener ('DOMContentLoaded', function () {
-
+console.log(JSON.stringify(window.users));
 
     let currentBasa = [];
     //получаем базу жанров
@@ -307,6 +307,7 @@ containerAll.addEventListener('click', () =>{
         createPagination ();
     }
 });
+
 //при нажатии на регистрацию
 containerAll.addEventListener('click', () =>{
     let target = event.target;
@@ -426,11 +427,13 @@ containerAll.addEventListener('click', () => {
             newUsers.password = registrationPassword.value;
             newUsers.email = registrationEmail.value;
             users.push(newUsers);
+            window.otherUserMode = true;
 
             //отображает юзера при входе
             user_head.innerHTML = registrationName.value;
             user_head.classList.add('visable');
             document.querySelector('.double-border-button').innerHTML = 'Sign Up';
+
             //создаём главную страницу
             mainPage ();
             getMovis(1, selectTypeSort(document.getElementById('sortForm')))
@@ -571,7 +574,7 @@ comeIn.addEventListener('click', () => {
         user_head.classList.remove('visable');
         user_head.innerHTML = '';
         document.querySelector('.double-border-button').innerHTML = 'Sign In / Sign Up';
-        adminMode = false;
+        window.adminMode = false;
         window.otherUserMode = false;
 
         //создаём главную страницу
