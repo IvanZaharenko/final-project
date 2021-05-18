@@ -23,8 +23,6 @@ mainPage ();
 
 //При прогрузке страницы
 document.addEventListener ('DOMContentLoaded', function () {
-console.log(JSON.stringify(window.users));
-
     let currentBasa = [];
     //получаем базу жанров
     getMoveGenre()
