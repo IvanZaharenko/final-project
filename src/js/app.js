@@ -7,24 +7,10 @@ window.users = [
 ];
 window.page = { html: "" };
 window.adminMode = false;
+window.otherUserMode = false;
 window.deleteFilm = [];
 window.basaGenre = [];
-window.newFilm = [
-                    {
-                    id:0,
-                    title:'yghfjgf',
-                    tagline: '',
-                    overview:'',
-                    popularity: 0,
-                    release_date:'',
-                    vote_average: 0,
-                    vote_count:0,
-                    genres:[
-                        {id:12},
-                        {id:18}
-                    ]
-                    }
-                ];
+window.newFilm = [];
 let activPage = 1;
 
 const containerAll = document.getElementById('containerAll');
@@ -37,11 +23,13 @@ mainPage ();
 
 //При прогрузке страницы
 document.addEventListener ('DOMContentLoaded', function () {
+
+
     let currentBasa = [];
     //получаем базу жанров
     getMoveGenre()
         .then(post => {
-            basaGenre = post.genres;
+            window.basaGenre = post.genres;
         })
         .catch(err => {//при ошибке сообщаение в консоль
             console.log(err);
@@ -301,9 +289,8 @@ containerAll.addEventListener('click', () =>{
         password.value ='';
         alert('Неправильный электронный адрес, или пароль');
     } else {
-        if (email.value === 'admin@gmail.com') {
-        window.adminMode = true;
-        }
+        if (email.value === 'admin@gmail.com')  window.adminMode = true;
+        if (email.value !== 'admin@gmail.com')  window.otherUserMode = true;
         //отображает юзера при входе
         autorizationUser(user_head,activUser );
         //создаём главную страницу
@@ -585,6 +572,8 @@ comeIn.addEventListener('click', () => {
         user_head.innerHTML = '';
         document.querySelector('.double-border-button').innerHTML = 'Sign In / Sign Up';
         adminMode = false;
+        window.otherUserMode = false;
+
         //создаём главную страницу
         mainPage ();
         getMovis(1, selectTypeSort(document.getElementById('sortForm')))

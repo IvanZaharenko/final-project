@@ -5,16 +5,24 @@ containerAll.addEventListener('click', (event) => {
     if (!target.classList.contains('item_movie')) return;
     document.querySelector('.preloader-5').classList.add('display-block');
     window.scrollTo(0,0);
-     if (searchMoveID(target) !== 0) {
-         getMoveID(searchMoveID(target))
-            .then(post =>  {
-            aboutFilmPage (post);
-            console.log(post)
-            })
+    if (searchMoveID(target) === 0) {
+        aboutFilmPage(newFilm[searchNewMoveTitle(target)]);
+    } else {
+        getMoveID(searchMoveID(target))
+            .then(post => aboutFilmPage(post))
             .catch(err => console.log(err));
-        } else {
-            aboutFilmPage(newFilm[searchNewMoveTitle(target)]);
-        }
+    }
+});
+
+containerAll.addEventListener('click', () => {
+    let target = event.target;
+    if (!target.classList.contains('like'))return;
+    target.classList.toggle('click_like');
+    if (target.classList.contains('click_like')) {
+        target.closest('.about-vote_count').querySelector('.count_like').innerHTML = Number(target.closest('.about-vote_count').querySelector('.count_like').innerHTML) + 1;
+    }   else {
+        target.closest('.about-vote_count').querySelector('.count_like').innerHTML = Number(target.closest('.about-vote_count').querySelector('.count_like').innerHTML) -1;
+    }
 });
 
 function aboutFilmPage (postID) {
@@ -28,44 +36,32 @@ function aboutFilmPage (postID) {
         src = `https://image.tmdb.org/t/p/w500${infoFilm.poster_path}`;
     }
     document.getElementById('containerListMovie').remove();
-
-    if (adminMode){
         page.html  = `
         <article id="containerAboutFilm">
             <div id="about-film_poster">
-                <img src="${src}" alt="Постер фильма"/>
-                <a class="deleteFilm_about">☒</a>
-                <a class="redactFilm">&#9998;</a>
+                <img src="${src}" alt="Постер фильма"/>`;
+        if (adminMode) {
+            page.html  += ` <a class="deleteFilm_about">☒</a>
+                            <a class="redactFilm">&#9998;</a>`
+        }
+        page.html  += ` 
             </div>
-            <div id="about-film_info">
-                <h2 class="about_title"> ${infoFilm.title}</h2>
-                <p class="about_miniOverview">${infoFilm.tagline}</p>
-                <p class="about_release">Год выпуска: <span class="white_color"> ${infoFilm.release_date.split('-').reverse().join('/')}</span></p>
-                <p class="about_genres">Жанры: <span class="white_color">${actualGenre(infoFilm).slice(1,-1)+'.'}</span></p>
-                <p class="about_vote">рейтинг: <span class="white_color">${infoFilm.vote_average}/10</span></p>
-                <p class="about_overview">Описание фильма: <br><br><span class="white_color">${infoFilm.overview}</span></p>
-            </div>
-        </article>
-    `;
+                <div id="about-film_info">
+                    <h2 class="about_title"> ${infoFilm.title}</h2>
+                    <p class="about_miniOverview">${infoFilm.tagline}</p>
+                    <p class="about_release">Год выпуска: <span class="white_color"> ${infoFilm.release_date.split('-').reverse().join('/')}</span></p>
+                    <p class="about_genres">Жанры: <span class="white_color">${actualGenre(infoFilm).slice(1,-1)+'.'}</span></p>
+                    <p class="about_vote">Рейтинг: <span class="white_color">${infoFilm.vote_average}/10</span></p>
+                    <p class="about-vote_count">Понравилось: <span class="white_color count_like">${infoFilm.vote_count}</span> людям.`;
+        if (window.otherUserMode) {
+            page.html += `<input id="toggle-heart" type="checkbox"/>
+                          <label for="toggle-heart" aria-label="like" class="like">❤</label>`
+        }
+        page.html +=`</p>
+                <p class="about_overview">Описание фильма: <br><span class="white_color">${infoFilm.overview}</span></p>
+                </div>
+            </article>`;
     containerAll.innerHTML = page.html;
-    } else {
-        page.html  = `
-        <article id="containerAboutFilm">
-            <div id="about-film_poster">
-                <img src="${src}" alt="Постер фильма"/>
-            </div>
-            <div id="about-film_info">
-                <h2 class="about_title"> ${infoFilm.title}</h2>
-                <p class="about_miniOverview">${infoFilm.tagline}</p>
-                <p class="about_release">Год выпуска: <span class="white_color"> ${infoFilm.release_date.split('-').reverse().join('/')}</span></p>
-                <p class="about_genres">Жанры:  <span class="white_color">${actualGenre(infoFilm).slice(1,-1)+'.'}</span></p>
-                <p class="about_vote">рейтинг: <span class="white_color">${infoFilm.vote_average}/10</span></p>
-                <p class="about_overview">Описание фильма: <br><br><span class="white_color">${infoFilm.overview}</span></p>
-            </div>
-        </article>
-    `;
-    containerAll.innerHTML = page.html;
-    }
 }
 //Получить фильм по выбранному id
 function getMoveID (id) {

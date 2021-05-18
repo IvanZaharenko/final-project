@@ -14,7 +14,7 @@
   max-width: 780px;
   width: 100%;
   padding: 0 0 0 80px;
-
+  position: relative;
 }
 .deleteFilm_about {
   position: absolute;
@@ -47,7 +47,7 @@
   color: #a2a2a2;
   margin: 5px 0 40px 0;
 }
-.about_release, .about_genres, .about_vote, .about_overview{
+.about_release, .about_genres, .about_vote, .about_overview, .about-vote_count{
   color: #a2a2a2;
   line-height: 1.5;
 }
