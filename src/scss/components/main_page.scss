@@ -1,0 +1,132 @@
+body{
+  background-color: #323435;
+}
+#containerAll {
+  min-height: calc(100vh - 130px);
+  position: relative;
+}
+#containerHomePage{
+  margin: 0 50px;
+}
+#containerListMovie{
+  margin: 20px auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 1360px;
+}
+#sortForm{
+  background-color: #494a49;
+  border: 1px solid #494a49;
+  height: 30px;
+  width: 300px;
+  margin: 20px 0 0 100px;
+  color: white;
+}
+.item_movie{
+  width: 200px;
+  height: 319px;
+  text-decoration: none;
+  transition: 0.5s;
+  color: #323435;
+  position: relative;
+  margin:20px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+
+    &:hover{
+      background-color: rgba(0,0,0,0.5);
+  }
+}
+.item_movie img{
+  position: absolute;
+  top: 0;
+  z-index: -1;
+  border-radius: 5px;
+  width: 200px;
+  height: 319px;
+
+  &:hover{
+    transform: scale(1.1);
+  }
+}
+.vote_item{
+  position: absolute;
+  top: calc(100% - 26px);
+  left: 0;
+  margin: 0;
+  height: 26px;
+  width: 46px;
+  background-color: #f7ba33;
+  border-radius: 0 3px 0 0;
+  text-align: center;
+  font-size: 16px;
+  color: #1c1d1c;
+  padding-top: 3px;
+  padding-bottom: 2px;
+  visibility: hidden;
+}
+.release_item{
+  margin: 0;
+  font-size: 18px;
+  text-align: center;
+  color: white;
+  visibility: hidden;
+  position: absolute;
+  top: calc(100% + 5px);
+}
+.title_item{
+  margin: 10px 0;
+  text-align: center;
+  min-height: 30px;
+  line-height: 30px;
+  background-color: rgba(0,0,0,0.4);
+  color: white;
+  -moz-user-select: none;
+-khtml-user-select: none;
+user-select: none;
+}
+.deleteFilm{
+  position: absolute;
+  font-size: 43px;
+  margin: 0;
+  color: #f9a81b;
+  top: calc(100% - 40px);
+  left: calc(100% - 34px);
+  width: 35px;
+  height: 41px;
+  visibility: hidden;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  user-select: none;
+}
+.floating-button {
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-block;
+  width: 40px;
+  height: 30px;
+  line-height: 30px;
+  margin: 20px 0 0 20px;
+  text-align: center;
+  font-weight: 600;
+  color: white;
+  background-color: #22ae95;
+  transition: 0.3s;
+  &:hover{
+    background: #2EE59D;
+    box-shadow: 0 15px 20px rgba(46, 229, 157, .4);
+    color: white;
+    transform: translateY(-7px);
+  }
+}
+
+.addFilm{
+
+}
+.visable {
+  visibility: visible;
+}
+.display-block{
+  display: block !important;
+}

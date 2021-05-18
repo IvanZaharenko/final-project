@@ -1,0 +1,57 @@
+#containerAboutFilm{
+  margin: 100px 50px;
+  display: flex;
+  justify-content: space-evenly;
+}
+#about-film_poster {
+  position: relative;
+  img{
+    width: 390px;
+    height: 590px;
+  }
+}
+#about-film_info {
+  max-width: 780px;
+  width: 100%;
+  padding: 0 0 0 80px;
+  position: relative;
+}
+.deleteFilm_about {
+  position: absolute;
+  font-size: 40px;
+  color: #f9a81b;
+  left: calc(100% - -3px);
+  top: -9px;
+  cursor: pointer;
+  width: 34px;
+  height: 39px;
+}
+.redactFilm {
+  position: absolute;
+  top: 41px;
+  left: 101%;
+  color: #f9a81b;
+  font-size: 33px;
+  width: 33px;
+  height: 35px;
+  cursor: pointer;
+}
+.about_title {
+  font-size: 32px;
+  font-weight: 500;
+  color: #eee;
+  margin: 0
+}
+.about_miniOverview{
+  font-size: 16px;
+  color: #a2a2a2;
+  margin: 5px 0 40px 0;
+}
+.about_release, .about_genres, .about_vote, .about_overview, .about-vote_count{
+  color: #a2a2a2;
+  line-height: 1.5;
+}
+.white_color{
+
+  color: white;
+}
